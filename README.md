@@ -5,7 +5,7 @@
 Vulnerability Testing
 ## 1. Brute Force
 
-Security Level: Low
+###Security Level: Low
 
 Payload Used: Burp Suite Intruder Attack
 
@@ -17,7 +17,7 @@ Screenshot:
 
 Explanation of why it worked: There is no limit to the number of log in attempts I can make, hence I can simply brute force every common password possible. Especially since the passwords are not complicated.
 
-Security Level: Medium
+###Security Level: Medium
 
 Payload Used: Burp Suite Intruder Attack
 
@@ -28,7 +28,7 @@ Screenshot:<img width="1810" height="811" alt="Brute Med" src="https://github.co
 
 Explanation of why it worked: Because the medium security only has a 2 second gap between attempts, brute force is still possible as there is only a minor delay between password attempts.
 
-Security Level: High
+###Security Level: High
 
 Payload Used: Burp Suite Intruder Attack
 
@@ -44,7 +44,7 @@ At Low security, there were no protection measures so it was a trivial case of t
 
 ## 2. Command Injection
 
-Security Level: Low
+###Security Level: Low
 
 Payload Used: Browser itself, 127.0.0.1; cat /etc/passwd
 
@@ -56,7 +56,7 @@ Screenshot:<img width="825" height="672" alt="Command Injection Low" src="https:
 
 Explanation of why it worked: On the lowest level the system executes whatever command is inputted directly into power shell. Because there is no sanitation, a person can use operators like semi colons to execute any commands they want directly.
 
-Security Level: Medium
+###Security Level: Medium
 
 Payload Used: Browser itself, 127.0.0.1 | cat /etc/password
 
@@ -68,4 +68,18 @@ Screenshot:<img width="827" height="527" alt="Command Injection Medium" src="htt
 
 
 Explanation of why it worked: On the medium level, the developer has put blacklists of operators like semi colon but the issue is he overlooked others such as | so they can still be exploited.
+
+###Security Level: hIGH
+
+Payload Used: Browser itself, 127.0.0.1|cat /etc/password
+
+Result: Entire list of user accounts on linux server dumped on screen.
+
+Screenshot:<img width="822" height="512" alt="Command Injection High" src="https://github.com/user-attachments/assets/3a3e72f6-3153-4822-8544-82d8f1a434d7" />
+
+
+
+
+
+Explanation of why it worked: The developer has done a great job making a proper blacklist, but he made a typo in the blacklist where he added a trailing space. Meaning if I just change the commands spaces to exploit this, I easily got past it.
 
