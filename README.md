@@ -42,6 +42,7 @@ At Low security, there were no protection measures so it was a trivial case of t
 ## 2. Command Injection
 
 Security Level: Low
+
 Payload Used: Browser itself, 127.0.0.1; cat /etc/passwd
 
 Result: Entire list of user accounts on linux server dumped on screen.
