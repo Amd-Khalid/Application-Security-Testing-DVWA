@@ -3,7 +3,8 @@
 # DVWA Security Lab Report
 
 Vulnerability Testing
-1. Brute Force
+## 1. Brute Force
+
 Security Level: Low
 Payload Used: Burp Suite Intruder Attack
 
@@ -37,3 +38,18 @@ Explanation of why it failed/worked: There is a CSRF token being used on this le
 
 Security Level Comparison
 At Low security, there were no protection measures so it was a trivial case of trying multiple passwords. At medium difficulty there was only a short delay but it was still easy. At high difficulty it was more complicated where I had to extract the token as well to find out the password.
+
+## 2. Command Injection
+
+Security Level: Low
+Payload Used: Browser itself, 127.0.0.1; cat /etc/passwd
+
+Result: Entire list of user accounts on linux server dumped on screen.
+
+Screenshot:
+<img width="825" height="672" alt="Command Injection Low" src="https://github.com/user-attachments/assets/b7f25029-1f2d-46d7-b04f-0374db2b0d23" />
+
+
+
+Explanation of why it worked: On the lowest level the system executes whatever command is inputted directly into power shell. Because there is no sanitation, a person can use operators like semi colons to execute any commands they want directly.
+
