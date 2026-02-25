@@ -6,6 +6,7 @@ Vulnerability Testing
 ## 1. Brute Force
 
 Security Level: Low
+
 Payload Used: Burp Suite Intruder Attack
 
 Result: Multiple attempts were made to log in based on the password list I had provided, a few lengths were different indicating they were correct password matches.
@@ -17,6 +18,7 @@ Screenshot:
 Explanation of why it worked: There is no limit to the number of log in attempts I can make, hence I can simply brute force every common password possible. Especially since the passwords are not complicated.
 
 Security Level: Medium
+
 Payload Used: Burp Suite Intruder Attack
 
 Result: Multiple attempts were made to log in again based on the same password list, once more the correct password was found.
@@ -27,6 +29,7 @@ Screenshot:<img width="1810" height="811" alt="Brute Med" src="https://github.co
 Explanation of why it worked: Because the medium security only has a 2 second gap between attempts, brute force is still possible as there is only a minor delay between password attempts.
 
 Security Level: High
+
 Payload Used: Burp Suite Intruder Attack
 
 Result: Multiple attempts were made to log in, this time with a token being generated and Recursive GERP being utilised. Once more, the correct password and token combination was found.
@@ -47,10 +50,22 @@ Payload Used: Browser itself, 127.0.0.1; cat /etc/passwd
 
 Result: Entire list of user accounts on linux server dumped on screen.
 
-Screenshot:
-<img width="825" height="672" alt="Command Injection Low" src="https://github.com/user-attachments/assets/b7f25029-1f2d-46d7-b04f-0374db2b0d23" />
+Screenshot:<img width="825" height="672" alt="Command Injection Low" src="https://github.com/user-attachments/assets/b7f25029-1f2d-46d7-b04f-0374db2b0d23" />
 
 
 
 Explanation of why it worked: On the lowest level the system executes whatever command is inputted directly into power shell. Because there is no sanitation, a person can use operators like semi colons to execute any commands they want directly.
+
+Security Level: Medium
+
+Payload Used: Browser itself, 127.0.0.1 | cat /etc/password
+
+Result: Entire list of user accounts on linux server dumped on screen.
+
+Screenshot:<img width="827" height="527" alt="Command Injection Medium" src="https://github.com/user-attachments/assets/0d2f9f11-7127-4090-b989-69c201d788ad" />
+
+
+
+
+Explanation of why it worked: On the medium level, the developer has put blacklists of operators like semi colon but the issue is he overlooked others such as | so they can still be exploited.
 
