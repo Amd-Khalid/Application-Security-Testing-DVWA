@@ -123,16 +123,15 @@ Explanation of why it worked: The security check is broken, the developer isn't 
 
 ### Security Level: High
 
-Payload Used: External HTML link. Referer: http://127.0.0.1.hacker.com/evil.html
+Payload Used: Chained attack, uses inbuilt XSS Stored module to bypass CSRF protection
 
-Result: Password for the website was changed successfully after the new url was used.
+Result: Password for the website was changed successfully.
 
 Screenshot:
-<img width="1471" height="377" alt="CSRF Medium level" src="https://github.com/user-attachments/assets/0415dc62-c4ed-48fb-bcb7-c80958a6386b" />
+<img width="1195" height="906" alt="CSRF High level" src="https://github.com/user-attachments/assets/a384cb21-64c1-403e-9cf4-146ae844017f" />
 
 
 
 
 
-
-Explanation of why it worked: The security check is broken, the developer isn't checking if the referer being used for the URL exactly matches, they are simply checking if 127.0.0.1 is anywhere in the line. Hence as long as the URL for the evil.html file contains 127.0.0.1 anywhere, it still goes through and the same exploit for changing password works.
+Explanation of why it worked: There is an anti-CRF token (user token) that is being validated on the server, which external attacks like we used cannot read. But now we bypass this because we used stored XSS vulnerability on the same trusted origin. Because we run this javascript directly in the application, the code is executing within the trusted origin, bypassing the SOP thus executing the request.
