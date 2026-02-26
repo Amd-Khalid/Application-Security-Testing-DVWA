@@ -166,3 +166,20 @@ Screenshot:
 
 
 Explanation of why it worked: At this security level, the website is simply taking whatever page is inputted into the URL and passes it directly into the code. Using a trick known as path traversal, we can then execute any command in the terminal and exploit this vulnerability.
+
+### Security Level: Medium
+
+Payload Used: ?page=....//....//....//....//....//....//etc/passwd
+
+Result: The website outputted the entire linux user depository on the top of the screen.
+
+Screenshot:
+<img width="1898" height="911" alt="File Inclusion Medium" src="https://github.com/user-attachments/assets/4f5006df-204b-4ff0-800d-28f32d4d42f9" />
+
+
+
+
+
+
+
+Explanation of why it worked: At this security level, the security level is checking for strings such as "../" however there is a fatal flaw, that it only checks once. Meaning if I simply embed and repeat the ../ twice it will not be filtered and the command will still work as intended.
