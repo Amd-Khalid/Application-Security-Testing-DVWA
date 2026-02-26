@@ -148,3 +148,21 @@ Screenshot:
 
 
 Explanation of why it worked: There is an anti-CRF token (user token) that is being validated on the server, which external attacks like we used cannot read. But now we bypass this because we used stored XSS vulnerability on the same trusted origin. Because we run this javascript directly in the application, the code is executing within the trusted origin, bypassing the SOP thus executing the request.
+
+## 4. File Inclusion
+
+### Security Level: Low
+
+Payload Used: ?page=../../../../../../etc/passwd
+
+Result: The website outputted the entire linux user depository on the top of the screen.
+
+Screenshot:
+<img width="1901" height="908" alt="File Inclusion Low" src="https://github.com/user-attachments/assets/b31de28c-e58c-4390-a12b-eb22da0c99f9" />
+
+
+
+
+
+
+Explanation of why it worked: At this security level, the website is simply taking whatever page is inputted into the URL and passes it directly into the code. Using a trick known as path traversal, we can then execute any command in the terminal and exploit this vulnerability.
