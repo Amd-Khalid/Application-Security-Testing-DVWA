@@ -94,7 +94,7 @@ Explanation of why it worked: The developer has done a great job making a proper
 
 Payload Used: External HTML link. http://127.0.0.1:8080/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change
 
-Result: Password for the website was changed successfully open clicking the link given in the html.
+Result: Password for the website was changed successfully upon clicking the link given in the html.
 
 Screenshot:
 <img width="1918" height="913" alt="CSRF low level" src="https://github.com/user-attachments/assets/5f73240e-b0d0-472e-8f04-1f2ee78dc777" />
@@ -104,3 +104,19 @@ Screenshot:
 
 
 Explanation of why it worked: I created an external html which when you open, it takes advantage of the fact that the low level security threat uses a simple HTTP GET request, all new paramters are being passed directly into the URL. Hence inside this external html, once they click on the link, it loads a change password cross attack which overrides the websites password.
+
+### Security Level: Medium
+
+Payload Used: External HTML link. Referer: http://127.0.0.1.hacker.com/evil.html
+
+Result: Password for the website was changed successfully after the new url was used.
+
+Screenshot:
+<img width="1471" height="377" alt="CSRF Medium level" src="https://github.com/user-attachments/assets/0415dc62-c4ed-48fb-bcb7-c80958a6386b" />
+
+
+
+
+
+
+Explanation of why it worked: The security check is broken, the developer isn't checking if the referer being used for the URL exactly matches, they are simply checking if 127.0.0.1 is anywhere in the line. Hence as long as the URL for the evil.html file contains 127.0.0.1 anywhere, it still goes through and the same exploit for changing password works.
