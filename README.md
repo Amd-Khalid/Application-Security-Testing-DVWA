@@ -120,3 +120,19 @@ Screenshot:
 
 
 Explanation of why it worked: The security check is broken, the developer isn't checking if the referer being used for the URL exactly matches, they are simply checking if 127.0.0.1 is anywhere in the line. Hence as long as the URL for the evil.html file contains 127.0.0.1 anywhere, it still goes through and the same exploit for changing password works.
+
+### Security Level: High
+
+Payload Used: External HTML link. Referer: http://127.0.0.1.hacker.com/evil.html
+
+Result: Password for the website was changed successfully after the new url was used.
+
+Screenshot:
+<img width="1471" height="377" alt="CSRF Medium level" src="https://github.com/user-attachments/assets/0415dc62-c4ed-48fb-bcb7-c80958a6386b" />
+
+
+
+
+
+
+Explanation of why it worked: The security check is broken, the developer isn't checking if the referer being used for the URL exactly matches, they are simply checking if 127.0.0.1 is anywhere in the line. Hence as long as the URL for the evil.html file contains 127.0.0.1 anywhere, it still goes through and the same exploit for changing password works.
