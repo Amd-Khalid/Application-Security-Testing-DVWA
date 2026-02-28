@@ -183,3 +183,21 @@ Screenshot:
 
 
 Explanation of why it worked: At this security level, the security level is checking for strings such as "../" however there is a fatal flaw, that it only checks once. Meaning if I simply embed and repeat the ../ twice it will not be filtered and the command will still work as intended.
+
+### Security Level: High
+
+Payload Used: ?page=file:///etc/passwd
+
+Result: The website outputted the entire linux user depository on the top of the screen.
+
+Screenshot:
+<img width="1886" height="962" alt="File Inclusion High" src="https://github.com/user-attachments/assets/746a8d33-62a8-407c-ae69-66ac5646186d" />
+
+
+
+
+
+
+
+
+Explanation of why it worked: At this security level, the security level is moving away from a blacklist to a white list where it's only allowing certain strings. However there is a loophole as PHP has built-in protocols, one being the file:// protocol, which goes right through the whitelist and in turn still fetches the path etc/passwd and dumps the information.
