@@ -201,3 +201,39 @@ Screenshot:
 
 
 Explanation of why it worked: At this security level, the security level is moving away from a blacklist to a white list where it's only allowing certain strings. However there is a loophole as PHP has built-in protocols, one being the file:// protocol, which goes right through the whitelist and in turn still fetches the path etc/passwd and dumps the information.
+
+## 5. File Upload
+
+### Security Level: Low
+
+Payload Used: File uploaded containing the command <?php system($_GET['cmd']); ?>
+
+Result: The URL can now be used to execute commands such as ls and achieve full remote code execution.
+
+Screenshot:
+<img width="1913" height="963" alt="File Upload Low" src="https://github.com/user-attachments/assets/894063e5-3837-46fa-8c83-5892130fbaeb" />
+
+
+
+
+
+
+
+Explanation of why it worked: In this security level, the website simply allows for any file to be uploaded without checking for file extensions. As a result, because the web server is designed to execute php files, we can simply run php code directly on the server.
+
+### Security Level: Medium
+
+Payload Used: File uploaded containing the command <?php system($_GET['cmd']); ?>
+
+Result: The URL can now be used to execute commands such as ls and achieve full remote code execution.
+
+Screenshot:
+<img width="1913" height="963" alt="File Upload Low" src="https://github.com/user-attachments/assets/894063e5-3837-46fa-8c83-5892130fbaeb" />
+
+
+
+
+
+
+
+Explanation of why it worked: In this security level, the website simply allows for any file to be uploaded without checking for file extensions. As a result, because the web server is designed to execute php files, we can simply run php code directly on the server.
