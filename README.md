@@ -276,3 +276,24 @@ Screenshot:
 
 
 Explanation of why it worked: The Medium security level attempts to restrict uploads by verifying the Content-Type header provided by the client (e.g., ensuring it is image/jpeg or image/png). However, it relies entirely on user-controllable input without validating the actual file contents or extension on the server side. By writing a Python script to construct the HTTP POST request, the Content-Type header can be manually spoofed to an accepted MIME type, tricking the application into storing the executable PHP script.
+
+
+### Security Level: High
+
+Payload Used: A polyglot payload disguising PHP code inside an image file structure: GIF89a; <?php system($_GET['cmd']); ?>, saved as hacked.jpg. 
+
+Result: Successfully bypassed strict file extension and content-signature validation to upload a malicious payload, and achieved Remote Code Execution by utilizing the LFI vulnerability to execute the injected code.
+
+Screenshot:
+<img width="1900" height="962" alt="File Upload High" src="https://github.com/user-attachments/assets/358e4f2a-642e-4ecc-afe9-80df8e460433" />
+<img width="1897" height="697" alt="File Upload High 2" src="https://github.com/user-attachments/assets/e2d987e2-c97c-4d21-9cc7-e50f4007bcbd" />
+
+
+
+
+
+
+
+
+
+Explanation of why it worked: The validation was bypassed by forging a file header. The string GIF89a; acts as a valid magic byte signature for a GIF, satisfying the getimagesize() check, while the .jpg extension bypasses the name filter. Because the web server will not natively execute a .jpg file as PHP, the attack requires chaining with a Local File Inclusion vulnerability. The include()  function in PHP evaluates any PHP tags present within the included file, regardless of its extension, allowing the embedded web shell to execute and process arbitrary operating system commands.
