@@ -297,3 +297,23 @@ Screenshot:
 
 
 Explanation of why it worked: The validation was bypassed by forging a file header. The string GIF89a; acts as a valid magic byte signature for a GIF, satisfying the getimagesize() check, while the .jpg extension bypasses the name filter. Because the web server will not natively execute a .jpg file as PHP, the attack requires chaining with a Local File Inclusion vulnerability. The include()  function in PHP evaluates any PHP tags present within the included file, regardless of its extension, allowing the embedded web shell to execute and process arbitrary operating system commands.
+
+## 6. Insecure CAPTCHA
+
+### Security Level: Low
+
+Payload Used: Simply edited the HTML of the page to change `<input type="hidden" name="step" value="2">` value from 1 to 2.
+
+Result: The website genuinely believed the page form was now on step 2, and the password was changed bypassing the CAPTCHA.
+
+Screenshot:
+<img width="1597" height="902" alt="Captcha Low" src="https://github.com/user-attachments/assets/b1ccfc1b-a88f-4a38-bf4a-e6389b832d6c" />
+
+
+
+
+
+
+
+
+Explanation of why it worked: At the Low security level, the application utilizes a multi-step workflow for the password change process, relying on a client-provided step parameter to track progression. Because the server completely trusts client side info, an attacker can use browser developer tools to manually alter the DOM before submission, changing the stepparameter to 2. This causes the server-side script to bypass the entire CAPTCHA validation code block and immediately execute the database update.
