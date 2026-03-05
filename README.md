@@ -309,6 +309,14 @@ Result: The website genuinely believed the page form was now on step 2, and the 
 Screenshot:
 <img width="1597" height="902" alt="Captcha Low" src="https://github.com/user-attachments/assets/b1ccfc1b-a88f-4a38-bf4a-e6389b832d6c" />
 
+### Security Level: Medium
+
+Payload Used: Simply edited the HTML of the page to change `<input type="hidden" name="step" value="2">` value from 1 to 2. And inserted new line below it with `<input type="hidden" name="passed_captcha" value="true">`
+
+Result: The website genuinely changed the password believing the captcha was verified.
+
+Screenshot:
+<img width="1777" height="967" alt="Insecure Captcha Medium" src="https://github.com/user-attachments/assets/6ad4f88d-933e-4a68-8d98-2049b79f2e14" />
 
 
 
@@ -316,4 +324,7 @@ Screenshot:
 
 
 
-Explanation of why it worked: At the Low security level, the application utilizes a multi-step workflow for the password change process, relying on a client-provided step parameter to track progression. Because the server completely trusts client side info, an attacker can use browser developer tools to manually alter the DOM before submission, changing the stepparameter to 2. This causes the server-side script to bypass the entire CAPTCHA validation code block and immediately execute the database update.
+
+
+
+Explanation of why it worked: This method bypasses the low security level by introducing a new parameter for passed_captcha which the server verifies in the POST request. However the server is still relying on the client-side for authorization, hence simply using developer tools to inject this next parameter as passed is enough to bypass once again.
