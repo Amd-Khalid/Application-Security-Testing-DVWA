@@ -309,6 +309,9 @@ Result: The website genuinely believed the page form was now on step 2, and the 
 Screenshot:
 <img width="1597" height="902" alt="Captcha Low" src="https://github.com/user-attachments/assets/b1ccfc1b-a88f-4a38-bf4a-e6389b832d6c" />
 
+
+Explanation of why it worked: At the Low security level, the application utilizes a multi-step workflow for the password change process, relying on a client-provided step parameter to track progression. Because the server blindly trusts client-side input, an attacker can use browser developer tools to manually alter the DOM before submission, changing the step parameter to 2. This causes the server-side script to bypass the entire CAPTCHA validation code block and immediately execute the database update.
+
 ### Security Level: Medium
 
 Payload Used: Simply edited the HTML of the page to change `<input type="hidden" name="step" value="2">` value from 1 to 2. And inserted new line below it with `<input type="hidden" name="passed_captcha" value="true">`
@@ -317,6 +320,8 @@ Result: The website genuinely changed the password believing the captcha was ver
 
 Screenshot:
 <img width="1777" height="967" alt="Insecure Captcha Medium" src="https://github.com/user-attachments/assets/6ad4f88d-933e-4a68-8d98-2049b79f2e14" />
+
+Explanation of why it worked:The Medium security level attempts to patch the Low vulnerability by introducing a second parameter passed_captcha. The server verifies that both step=2 and passed_captcha=true are present in the POST request. However, the core logic flaw remains: the server relies entirely on client-side input for authorization. By utilizing browser developer tools to inject the passed_captcha parameter into the DOM alongside the modified step parameter, an attacker can trivially forge the necessary verification flags and bypass the CAPTCHA requirement completely.
 
 ### Security Level: High
 
@@ -339,3 +344,18 @@ Screenshot:
 
 
 Explanation of why it worked: The PHP source code contains a fallback condition that grants authorization if the g-recaptcha-response parameter exactly matches hidd3n_valu3 and the HTTP User-Agent header matches reCAPTCHA. By using browser developer tools to manually spoof the header and inject the required form data, an attacker can trivially bypass the intended CAPTCHA enforcement without needing an external proxy.
+
+## 6. SQL Injection
+
+### Security Level: Low
+
+Payload Used: `' OR 1=1 #` entered into the User ID input field.
+
+Result: Successfully manipulated the backend SQL query to evaluate as globally true, causing the application to dump the entire users database table to the screen.
+
+Screenshot:
+<img width="1321" height="902" alt="SQL Injection Low" src="https://github.com/user-attachments/assets/a3655260-2d5c-40ca-abe0-7c6e062b09bd" />
+
+
+
+Explanation of why it worked: At the Low security level, user input is concatenated directly into the SQL query string without any sanitization or parameterized queries. By injecting a single quote ', the attacker escapes the intended data context. Adding `OR 1=1` creates a tautology (a condition that is always true), forcing the `WHERE` clause to return every record in the table. The hash symbol (`#`) comments out the remainder of the legitimate query, preventing syntax errors.
