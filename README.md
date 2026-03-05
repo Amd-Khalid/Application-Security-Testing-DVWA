@@ -359,3 +359,20 @@ Screenshot:
 
 
 Explanation of why it worked: At the Low security level, user input is concatenated directly into the SQL query string without any sanitization or parameterized queries. By injecting a single quote ', the attacker escapes the intended data context. Adding `OR 1=1` creates a tautology (a condition that is always true), forcing the `WHERE` clause to return every record in the table. The hash symbol (`#`) comments out the remainder of the legitimate query, preventing syntax errors.
+
+## 6. SQL Injection
+
+### Security Level: Medium
+
+Payload Used: `' OR 1=1 #` entered into the inspect tool dropdown code.
+
+Result: Successfully manipulated the backend SQL query to evaluate as globally true, causing the application to dump the entire users database table to the screen.
+
+Screenshot:
+<img width="1127" height="900" alt="SQL Injection Medium" src="https://github.com/user-attachments/assets/ede8f47e-5bfa-4c5e-bb28-aed9096849f7" />
+
+
+
+
+Explanation of why it worked: The developer believed that by making a drop down menu, it gets rid of any risk of an individual entering malicious code. But they made the error of removing quotation marks around id, meaning I can simply go into developer tools and add the same or condition into any dropdown condition and it will execute it regardless.
+
