@@ -318,6 +318,14 @@ Result: The website genuinely changed the password believing the captcha was ver
 Screenshot:
 <img width="1777" height="967" alt="Insecure Captcha Medium" src="https://github.com/user-attachments/assets/6ad4f88d-933e-4a68-8d98-2049b79f2e14" />
 
+### Security Level: High
+
+Payload Used: Utilized browser Developer Tools (Network Conditions) to override the User-Agent header to reCAPTCHA, and manipulated the DOM to inject the hidden parameter `<input type="hidden" name="g-recaptcha-response" value="hidd3n_valu3">`.
+
+Result: The website genuinely changed the password believing the captcha was verified.
+
+Screenshot:
+<img width="1760" height="952" alt="Insecure Captcha High" src="https://github.com/user-attachments/assets/8a917bf4-9f8b-4a0d-b065-94e6c20f9de5" />
 
 
 
@@ -327,4 +335,7 @@ Screenshot:
 
 
 
-Explanation of why it worked: This method bypasses the low security level by introducing a new parameter for passed_captcha which the server verifies in the POST request. However the server is still relying on the client-side for authorization, hence simply using developer tools to inject this next parameter as passed is enough to bypass once again.
+
+
+
+Explanation of why it worked: The PHP source code contains a fallback condition that grants authorization if the g-recaptcha-response parameter exactly matches hidd3n_valu3 and the HTTP User-Agent header matches reCAPTCHA. By using browser developer tools to manually spoof the header and inject the required form data, an attacker can trivially bypass the intended CAPTCHA enforcement without needing an external proxy.
