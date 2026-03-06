@@ -392,7 +392,7 @@ Explanation of why it worked: The developer believed that by making a separate w
 
 ### Security Level: Low
 
-Payload Used: `' OR 1=1 #` entered into the User ID input field.
+Payload Used: 
 
 Result: Successfully manipulated the backend SQL query to evaluate as globally true, causing the application to dump the entire users database table to the screen.
 
