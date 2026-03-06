@@ -392,15 +392,70 @@ Explanation of why it worked: The developer believed that by making a separate w
 
 ### Security Level: Low
 
-Payload Used: 
+Payload Used: True condition: `1' AND 1=1 #`
 
-Result: Successfully manipulated the backend SQL query to evaluate as globally true, causing the application to dump the entire users database table to the screen.
+Result: Successfully identified a Boolean-based Blind SQL Injection vulnerability. By injecting AND conditions, the application's generic responses ("User ID exists" vs. "User ID is MISSING") could be used to infer the true/false state of arbitrary database queries.
 
 Screenshot:
-<img width="1321" height="902" alt="SQL Injection Low" src="https://github.com/user-attachments/assets/a3655260-2d5c-40ca-abe0-7c6e062b09bd" />
+<img width="855" height="572" alt="SQL Injection Blind" src="https://github.com/user-attachments/assets/d2e7c032-f802-4e7a-a144-38af00385d28" />
 
 
 
-Explanation of why it worked: At the Low security level, user input is concatenated directly into the SQL query string without any sanitization or parameterized queries. By injecting a single quote ', the attacker escapes the intended data context. Adding `OR 1=1` creates a tautology (a condition that is always true), forcing the `WHERE` clause to return every record in the table. The hash symbol (`#`) comments out the remainder of the legitimate query, preventing syntax errors.
+
+Explanation of why it worked: At the Low security level, the application is vulnerable to classic SQL injection due to unsanitized input WHERE user_id = '$id', but it does not reflect database contents or errors to the screen. Instead, it relies on boolean inference. By injecting an AND operator, an attacker can append true or false logical statements to a valid user ID query. The application's varying responses based on the evaluated truth of the injected statement confirm the vulnerability and provide a mechanism for data extraction via automated character guessing.
+
+### Security Level: Medium
+
+Payload Used: 
+True condition: `1 AND 1=1` (Injected via DOM manipulation)
+False condition: `1 AND 1=2` (Injected via DOM manipulation)
+
+Result: Successfully bypassed the dropdown menu restriction and the `mysqli_real_escape_string()` filter to prove Boolean-based Blind SQL Injection.
+
+Screenshot:
+<img width="1851" height="911" alt="SQL Injection Blind Medium" src="https://github.com/user-attachments/assets/3e541f76-dd8a-4fbd-84f2-e14bd8826067" />
+
+
+
+
+
+Explanation of why it worked: The Medium security level attempts to stop injection by utilizing a dropdown menu and escaping input strings. However, because the backend query treats the input as an integer `WHERE user_id = $id`, it does not require enclosing quotes to break the data context. By using browser developer tools to manually modify the value of a dropdown `<option>`, an attacker can inject raw boolean logic (`AND 1=1`) that cleanly bypasses the escaping function and forces the database to evaluate the appended condition.
+
+### Security Level: High
+
+Payload Used: 
+True condition: `1 AND 1=1` (Injected via browser cookie)
+False condition: `1 AND 1=2` (Injected via browser cookie)
+
+Result: Successfully bypassed the UI restrictions by directly manipulating the `id` session cookie, proving Boolean-based Blind SQL Injection.
+
+Screenshot:
+<img width="1917" height="907" alt="SQL Injection Blind High" src="https://github.com/user-attachments/assets/f53d6d04-79a9-4b19-a07f-a1b5414f6e80" />
+<img width="1918" height="907" alt="SQL Injection Blind High 2" src="https://github.com/user-attachments/assets/982a5cb8-a8ca-45ff-8f73-a27cc0e79427" />
+
+
+
+
+
+
+Explanation of why it worked: The backend PHP code still dynamically concatenates the cookie value into the SQL query `WHERE user_id = '$id' LIMIT 1` without proper logic sanitization. By using browser developer tools to manually overwrite the `id` cookie with classic logic payloads (`1' AND 1=1 #`), an attacker can force the backend database to evaluate the appended boolean conditions, inferring the results upon page refresh.
+
+## 8. Weak Session IDs
+
+### Security Level: Low
+
+Payload Used: True condition: `1' AND 1=1 #`
+
+Result: Successfully identified a Boolean-based Blind SQL Injection vulnerability. By injecting AND conditions, the application's generic responses ("User ID exists" vs. "User ID is MISSING") could be used to infer the true/false state of arbitrary database queries.
+
+Screenshot:
+<img width="855" height="572" alt="SQL Injection Blind" src="https://github.com/user-attachments/assets/d2e7c032-f802-4e7a-a144-38af00385d28" />
+
+
+
+
+Explanation of why it worked: At the Low security level, the application is vulnerable to classic SQL injection due to unsanitized input WHERE user_id = '$id', but it does not reflect database contents or errors to the screen. Instead, it relies on boolean inference. By injecting an AND operator, an attacker can append true or false logical statements to a valid user ID query. The application's varying responses based on the evaluated truth of the injected statement confirm the vulnerability and provide a mechanism for data extraction via automated character guessing.
+
+
 
 
