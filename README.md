@@ -360,8 +360,6 @@ Screenshot:
 
 Explanation of why it worked: At the Low security level, user input is concatenated directly into the SQL query string without any sanitization or parameterized queries. By injecting a single quote ', the attacker escapes the intended data context. Adding `OR 1=1` creates a tautology (a condition that is always true), forcing the `WHERE` clause to return every record in the table. The hash symbol (`#`) comments out the remainder of the legitimate query, preventing syntax errors.
 
-## 6. SQL Injection
-
 ### Security Level: Medium
 
 Payload Used: `' OR 1=1 #` entered into the inspect tool dropdown code.
@@ -375,4 +373,34 @@ Screenshot:
 
 
 Explanation of why it worked: The developer believed that by making a drop down menu, it gets rid of any risk of an individual entering malicious code. But they made the error of removing quotation marks around id, meaning I can simply go into developer tools and add the same or condition into any dropdown condition and it will execute it regardless.
+
+### Security Level: High
+
+Payload Used: `' OR 1=1 #` entered into the input box.
+
+Result: Successfully manipulated the backend SQL query to evaluate as globally true, causing the application to dump the entire users database table to the screen.
+
+Screenshot:
+<img width="1252" height="878" alt="SQL Injection High" src="https://github.com/user-attachments/assets/a795aebb-d5da-442a-bf6b-2ba701ca479b" />
+
+
+
+
+Explanation of why it worked: The developer believed that by making a separate window for input and putting a LIMIT 1, any automated script would break. The issue is as a human we can easily circumvent this, because the query itself is unchanged frmo how it is at low level, we merely just need to once again inject the `' OR 1=1 #` where the # gets rid of the LIMIT 1 and the query is run and outputs information to us.
+
+## 7. SQL Injection (Blind)
+
+### Security Level: Low
+
+Payload Used: `' OR 1=1 #` entered into the User ID input field.
+
+Result: Successfully manipulated the backend SQL query to evaluate as globally true, causing the application to dump the entire users database table to the screen.
+
+Screenshot:
+<img width="1321" height="902" alt="SQL Injection Low" src="https://github.com/user-attachments/assets/a3655260-2d5c-40ca-abe0-7c6e062b09bd" />
+
+
+
+Explanation of why it worked: At the Low security level, user input is concatenated directly into the SQL query string without any sanitization or parameterized queries. By injecting a single quote ', the attacker escapes the intended data context. Adding `OR 1=1` creates a tautology (a condition that is always true), forcing the `WHERE` clause to return every record in the table. The hash symbol (`#`) comments out the remainder of the legitimate query, preventing syntax errors.
+
 
