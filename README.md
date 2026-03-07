@@ -567,12 +567,50 @@ Result: Successfully bypassed the server's regular expression (Regex) filter by 
 Screenshot:
 <img width="1916" height="962" alt="XSS Reflected High" src="https://github.com/user-attachments/assets/18b3520c-4172-41b5-8da1-c4d085943157" />
 
+## 11. XSS (Stored)
+
+### Security Level: Low
+
+Payload Used: `<script>alert("Stored XSS Hacked!")</script>` entered into the "Message" input field.
+
+Result: Successfully injected and stored arbitrary JavaScript permanently into the application's database. The script executes automatically for any user who views the guestbook page.
+
+Screenshot:
+<img width="1918" height="966" alt="XSS Stored Low" src="https://github.com/user-attachments/assets/f5fe1cfd-64fe-4b6c-87b5-88faaa50ffe5" />
+
+
+
+
+Explanation of why it worked: At the Low security level, the application takes user input from the guestbook form and stores it directly into the backend database without any sanitization. When the application retrieves these entries to display them on the page, it fails to HTML-encode the output. As a result, the victim's browser interprets the stored `<script>` tags as executable code rather than plain text, resulting in a persistent XSS vulnerability.
+
+### Security Level: Medium
+
+Payload Used: `<Script>alert("Medium Stored XSS!")</script>` entered into the "Name" input field (after bypassing client-side length restrictions).
+
+Result: Successfully bypassed both the client-side character limit and the server-side case-sensitive blacklist, resulting in persistent JavaScript execution.
+
+Screenshot:
+<img width="1918" height="966" alt="XSS Stored Medium" src="https://github.com/user-attachments/assets/81c889c8-5347-49bc-afcd-4b3d137f9ca1" />
+
+
+
+
+
+Explanation of why it worked: The Medium security level attempts to secure the application by aggressively sanitizing the "Message" parameter and applying a case-sensitive `<script>` filter to the "Name" parameter. Furthermore, it implements a client-side HTML restriction (`maxlength="10"`) on the Name input to prevent long payloads.
+
+### Security Level: High
+
+Payload Used: `<svg onload=alert("High Stored XSS!")>` entered into the "Name" input field (after bypassing client-side length restrictions).
+
+Result: Successfully bypassed both the client-side character limit and the server-side regular expression (Regex) blacklist, resulting in persistent JavaScript execution.
+
+Screenshot:
+<img width="1902" height="962" alt="XSS Stored High" src="https://github.com/user-attachments/assets/ab168d9f-bddc-4e30-9be5-09d690e5a51f" />
 
 
 
 
 
 
-
-Explanation of why it worked: Because the developer only blacklisted the specific "script" string pattern, the application remains vulnerable to alternative XSS vectors. By injecting an `<svg>` tag with an `onload` event handler, an attacker can provide a payload that completely evades the Regex pattern while still forcing the victim's browser to execute the embedded JavaScript upon rendering the reflected HTML.
+Explanation of why it worked: Client-side input length restrictions can be trivially removed by modifying the Document Object Model (DOM) using browser developer tools. Once the length restriction is removed, the backend Regex filter can be bypassed by utilizing a blacklist evasion technique. By injecting an alternative HTML tag that does not contain the word "script" (such as an `<svg>` tag with an `onload` event handler), the payload passes through the filter untouched and is permanently stored in the database, allowing for persistent cross-site scripting.
 
