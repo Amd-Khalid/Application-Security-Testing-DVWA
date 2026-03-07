@@ -444,18 +444,92 @@ Explanation of why it worked: The backend PHP code still dynamically concatenate
 
 ### Security Level: Low
 
-Payload Used: True condition: `1' AND 1=1 #`
+Payload Used: Observation of the `dvwaSession` cookie behavior via browser Developer Tools.
 
-Result: Successfully identified a Boolean-based Blind SQL Injection vulnerability. By injecting AND conditions, the application's generic responses ("User ID exists" vs. "User ID is MISSING") could be used to infer the true/false state of arbitrary database queries.
+Result: Demonstrated that the application generates entirely predictable, sequentially incrementing session IDs.
 
 Screenshot:
-<img width="855" height="572" alt="SQL Injection Blind" src="https://github.com/user-attachments/assets/d2e7c032-f802-4e7a-a144-38af00385d28" />
+<img width="1917" height="967" alt="Weak Session IDs low" src="https://github.com/user-attachments/assets/d0c34688-7bb5-414a-ad51-55b835118f47" />
 
 
 
 
-Explanation of why it worked: At the Low security level, the application is vulnerable to classic SQL injection due to unsanitized input WHERE user_id = '$id', but it does not reflect database contents or errors to the screen. Instead, it relies on boolean inference. By injecting an AND operator, an attacker can append true or false logical statements to a valid user ID query. The application's varying responses based on the evaluated truth of the injected statement confirm the vulnerability and provide a mechanism for data extraction via automated character guessing.
+
+Explanation of why it worked: At the Low security level, the application fails to use a cryptographically secure pseudorandom number generator (CSPRNG) for session identifiers. Instead, it relies on a simple global counter that increments by 1 for every new request. This predictability allows an attacker to trivially guess the active session IDs of other authenticated users, enabling session hijacking and unauthorized account takeover.
+
+### Security Level: Medium
+
+Payload Used: Observation of the `dvwaSession` cookie behavior via browser Developer Tools.
+
+Result: Demonstrated that the application generates session IDs based on the current Unix epoch timestamp.
+
+Screenshot:
+<img width="1848" height="907" alt="Weak Session IDs medium" src="https://github.com/user-attachments/assets/9a8fbdde-ae50-4da7-8ba9-18835e711b94" />
 
 
 
+
+
+
+Explanation of why it worked: The Medium security level attempts to improve upon the simple sequential counter by using the PHP `time()` function to generate the session ID. While the resulting 10-digit number appears more complex, it is not cryptographically random. Unix time is completely predictable. An attacker who knows approximately when a victim authenticated can easily brute-force the session ID by generating and testing the timestamps for that specific time window, leading to session hijacking.
+
+### Security Level: High
+
+Payload Used: Extracted the `dvwaSession` cookie via Developer Tools and reverse-engineered the value using an MD5 hash cracking tool (e.g., CrackStation).
+
+Result: Successfully demonstrated that the seemingly random 32-character session identifiers are merely MD5 hashes of a predictable, sequential counter.
+
+Screenshot:
+<img width="1838" height="911" alt="Weak Session IDs high" src="https://github.com/user-attachments/assets/a323796f-724e-4ea2-ba6b-fca0d31d30a4" />
+
+
+
+
+
+
+
+Explanation of why it worked: Because the keyspace (small integers) is incredibly limited, the hashes are highly vulnerable to dictionary attacks or rainbow table lookups. By extracting the hashed cookie and running it through a standard hash reversal tool, an attacker can easily uncover the underlying sequential pattern, predict future session IDs, and achieve session hijacking.
+
+## 8. XSS (DOM)
+
+### Security Level: Low
+
+Payload Used: `<script>alert("Hacked!")</script>` injected directly into the `default` URL parameter.
+
+Result: Successfully executed arbitrary JavaScript within the victim's browser context (DOM) via a manipulated URL.
+
+
+Screenshot:
+<img width="1897" height="912" alt="XSS Dom Low" src="https://github.com/user-attachments/assets/6c7a423b-4314-452e-9245-55d12b14e149" />
+
+
+Explanation of why it worked: At the Low security level, the application's client-side JavaScript extracts the value of the `default` parameter from the URL and passes it directly into a hazardous execution sink (`document.write`) to construct the language dropdown menu. Because the input is not sanitized or encoded before being rendered into the Document Object Model, the browser interprets the injected `<script>` tags as executable code rather than plain text.
+
+### Security Level: Medium
+
+Payload Used: `</select><img src=x onerror=alert("Hacked!")>` injected into the `default` URL parameter.
+
+Result: Successfully bypassed the server-side `<script>` tag filter and executed arbitrary JavaScript within the victim's browser context.
+
+Screenshot:
+<img width="1902" height="967" alt="XSS Dom Medium" src="https://github.com/user-attachments/assets/e905f88e-4b12-4410-bfca-b45f5a63688a" />
+
+
+
+
+Explanation of why it worked: The Medium security level attempts to mitigate XSS by implementing a server-side blacklist that searches for and blocks the literal string `<script`. This is an insecure design pattern because it fails to account for alternative HTML execution contexts. By utilizing an `<img>` tag with an `onerror` event handler, an attacker can execute JavaScript without ever using a `<script>` tag. Prepending `</select>` to the payload forces the browser to break out of the intended dropdown menu element, allowing the subsequent image tag to be rendered and the malicious event handler to fire.
+
+### Security Level: High
+
+Payload Used: `English#</select><script>alert("Hacked!")</script>` injected into the `default` URL parameter.
+
+Result: Successfully bypassed the strict server-side whitelist by utilizing the URL fragment identifier (`#`), resulting in arbitrary JavaScript execution in the DOM.
+
+Screenshot:
+<img width="1912" height="960" alt="XSS Dom High" src="https://github.com/user-attachments/assets/a79069d3-5999-46c5-8c0f-8182ce504fa4" />
+
+
+
+
+Explanation of why it worked: The vulnerability resides purely in the client-side Document Object Model (DOM). By placing the malicious payload after a URL fragment identifier (`#`), the payload is never transmitted to the backend server, completely bypassing the PHP whitelist. The client-side JavaScript (`document.location.href`), however, processes the entire URL string including the fragment. It extracts the hidden payload and insecurely writes it into the DOM, allowing the attacker to break out of the `<select>` HTML context and execute arbitrary code.
 
