@@ -490,7 +490,7 @@ Screenshot:
 
 Explanation of why it worked: Because the keyspace (small integers) is incredibly limited, the hashes are highly vulnerable to dictionary attacks or rainbow table lookups. By extracting the hashed cookie and running it through a standard hash reversal tool, an attacker can easily uncover the underlying sequential pattern, predict future session IDs, and achieve session hijacking.
 
-## 8. XSS (DOM)
+## 9. XSS (DOM)
 
 ### Security Level: Low
 
@@ -528,8 +528,51 @@ Result: Successfully bypassed the strict server-side whitelist by utilizing the 
 Screenshot:
 <img width="1912" height="960" alt="XSS Dom High" src="https://github.com/user-attachments/assets/a79069d3-5999-46c5-8c0f-8182ce504fa4" />
 
+## 10. XSS (Reflected)
+
+### Security Level: Low
+
+Payload Used: `<script>alert("Hacked!")</script>` entered into the "name" input field.
+
+Result: Successfully executed arbitrary JavaScript within the browser. The server reflected the unsanitized input directly into the page's HTML structure.
+
+
+Screenshot:
+<img width="1917" height="957" alt="XSS Reflected Low" src="https://github.com/user-attachments/assets/36a006da-f94a-4b7a-8543-78116753bf86" />
 
 
 
-Explanation of why it worked: The vulnerability resides purely in the client-side Document Object Model (DOM). By placing the malicious payload after a URL fragment identifier (`#`), the payload is never transmitted to the backend server, completely bypassing the PHP whitelist. The client-side JavaScript (`document.location.href`), however, processes the entire URL string including the fragment. It extracts the hidden payload and insecurely writes it into the DOM, allowing the attacker to break out of the `<select>` HTML context and execute arbitrary code.
+Explanation of why it worked: At the Low security level, the application takes the user-supplied `name` parameter via a GET request and echoes it directly onto the page without any validation, filtering, or output encoding. Because the browser cannot distinguish between the developer's intended HTML and the attacker's injected script, it simply executes the reflected `<script>` tags as code.
+
+### Security Level: Medium
+
+Payload Used: `<Script>alert("Hacked!")</script>` entered into the "name" input field.
+
+Result: Successfully bypassed the server's blacklist filter by utilizing mixed-case HTML tags, resulting in arbitrary JavaScript execution within the browser.
+* **Screenshot:**
+
+Screenshot:
+<img width="1916" height="966" alt="XSS Reflected Medium" src="https://github.com/user-attachments/assets/095e977b-461e-4051-b352-1118a7928521" />
+
+
+
+Explanation of why it worked: The Medium security level attempts to stop XSS by passing the user input through PHP's `str_replace()` function to strip out `<script>` tags. However, `str_replace()` is case-sensitive. The developer failed to use a case-insensitive function (like `str_ireplace()`) or implement proper HTML entity encoding. By manipulating the capitalization of the injected tags (e.g., `<Script>`), an attacker can evade the exact-match filter while still providing a payload that the victim's browser will recognize and execute as valid HTML/JavaScript.
+
+### Security Level: High
+
+Payload Used: `<svg onload=alert("Hacked!")>` entered into the "name" input field.
+
+Result: Successfully bypassed the server's regular expression (Regex) filter by utilizing an alternative HTML tag and event handler, resulting in arbitrary JavaScript execution within the browser.), resulting in arbitrary JavaScript execution in the DOM.
+
+Screenshot:
+<img width="1916" height="962" alt="XSS Reflected High" src="https://github.com/user-attachments/assets/18b3520c-4172-41b5-8da1-c4d085943157" />
+
+
+
+
+
+
+
+
+Explanation of why it worked: Because the developer only blacklisted the specific "script" string pattern, the application remains vulnerable to alternative XSS vectors. By injecting an `<svg>` tag with an `onload` event handler, an attacker can provide a payload that completely evades the Regex pattern while still forcing the victim's browser to execute the embedded JavaScript upon rendering the reflected HTML.
 
