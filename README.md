@@ -669,20 +669,54 @@ Explanation of why it worked: The Medium security level attempts to secure inlin
 
 ### Security Level: Low
 
-Payload Used: Chained Exploit (Unrestricted File Upload + CSP Bypass).
-1. Uploaded `hacked.js` (containing `alert("CSP Bypass Chained!");`) via the File Upload vulnerability.
-2. Injected the relative server path `../../hackable/uploads/hacked.js` into the CSP Bypass input field.
+Payload Used: Typed `success` into the input field and manually executed the `generate_token()` function via the browser console before submitting.
 
-Result: Successfully bypassed the Content Security Policy by leveraging the `'self'` whitelist directive, resulting in arbitrary JavaScript execution within the browser.
+Result: Successfully bypassed the token validation by manually forcing the client-side JavaScript to generate a valid MD5 hash for the targeted phrase.
 
 Screenshot:
-<img width="1918" height="893" alt="CSP Bypass Low" src="https://github.com/user-attachments/assets/3bd84270-31eb-42bf-a6c5-20eb4778c299" />
+<img width="1918" height="965" alt="Javascript Low" src="https://github.com/user-attachments/assets/3c409ce1-049a-4daa-bb36-385bc90e4e13" />
 
 
 
 
 
-Explanation of why it worked: At the Low security level, the application's CSP includes the `'self'` directive (`script-src 'self' https://pastebin.com`), which implicitly trusts and executes any script hosted on the same origin server. By chaining a separate file upload vulnerability to drop a malicious JavaScript file directly onto the DVWA server, an attacker can bypass external domain restrictions entirely. When the local file path is passed to the CSP Bypass module, the browser sees the script originating from `'self'` and executes the payload without restriction.
+
+Explanation of why it worked: At the Low security level, the application relies entirely on client-side JavaScript to generate a security token (an MD5 hash of the submitted phrase). The developer failed to attach the `generate_token()` function to an `onChange` or `onSubmit` event listener, causing the form to submit stale tokens when the user changes the text. Because the security logic is completely exposed and executed within the browser's Document Object Model (DOM), an attacker can easily read the source code, type the desired input, and manually execute the token generation function via the developer console to satisfy the server's validation checks.
+
+### Security Level: Medium
+
+Payload Used: Typed `success` into the input field and manually executed the `do_elsesomething("XX")` function via the browser console before submitting.
+
+Result: Successfully bypassed the token validation by manually forcing the external, obfuscated JavaScript to generate a valid security token for the targeted phrase.
+
+Screenshot:
+<img width="1918" height="962" alt="Javascript High" src="https://github.com/user-attachments/assets/7af1a5b6-5294-4393-87ca-99be17bb846c" />
+
+
+
+
+
+
+
+Explanation of why it worked: The Medium security level attempts to secure the token generation by moving the logic into an external, minified JavaScript file (`medium.js`). This relies on "security through obscurity," which is an ineffective defense mechanism. Because the client's browser must still download and execute the script to function, an attacker can easily locate the file, reverse-engineer the string manipulation logic, and manually execute the exposed `do_elsesomething()` function from the developer console to generate a valid token for any arbitrary input.
+
+### Security Level: High
+
+Payload Used: Typed `success` into the input field and manually executed `token_part_1("success", true)` and `token_part_2("XX")` via the browser console before submitting.
+
+Result: Successfully bypassed the token validation by interacting directly with the obfuscated client-side functions loaded into the browser's memory.
+
+Screenshot:
+<img width="1918" height="973" alt="Javascript Actual High" src="https://github.com/user-attachments/assets/77c68b21-6342-4699-910e-2fd2d2b39cbe" />
+
+
+
+
+
+
+
+
+Explanation of why it worked: Obfuscation provides no actual security ("security through obscurity"). Because the logic must run on the client side, the browser automatically unpacks the code and loads the functions into the global namespace. An attacker does not need to reverse-engineer the complex math or hashing algorithms; they can simply open the developer tools and manually call the exposed `token_part` functions in the correct sequence to generate a valid token for any arbitrary input.
 
 
 
