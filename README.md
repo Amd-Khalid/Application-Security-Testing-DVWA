@@ -345,7 +345,7 @@ Screenshot:
 
 Explanation of why it worked: The PHP source code contains a fallback condition that grants authorization if the g-recaptcha-response parameter exactly matches hidd3n_valu3 and the HTTP User-Agent header matches reCAPTCHA. By using browser developer tools to manually spoof the header and inject the required form data, an attacker can trivially bypass the intended CAPTCHA enforcement without needing an external proxy.
 
-## 6. SQL Injection
+## 7. SQL Injection
 
 ### Security Level: Low
 
@@ -388,7 +388,7 @@ Screenshot:
 
 Explanation of why it worked: The developer believed that by making a separate window for input and putting a LIMIT 1, any automated script would break. The issue is as a human we can easily circumvent this, because the query itself is unchanged frmo how it is at low level, we merely just need to once again inject the `' OR 1=1 #` where the # gets rid of the LIMIT 1 and the query is run and outputs information to us.
 
-## 7. SQL Injection (Blind)
+## 8. SQL Injection (Blind)
 
 ### Security Level: Low
 
@@ -440,7 +440,7 @@ Screenshot:
 
 Explanation of why it worked: The backend PHP code still dynamically concatenates the cookie value into the SQL query `WHERE user_id = '$id' LIMIT 1` without proper logic sanitization. By using browser developer tools to manually overwrite the `id` cookie with classic logic payloads (`1' AND 1=1 #`), an attacker can force the backend database to evaluate the appended boolean conditions, inferring the results upon page refresh.
 
-## 8. Weak Session IDs
+## 9. Weak Session IDs
 
 ### Security Level: Low
 
@@ -490,7 +490,7 @@ Screenshot:
 
 Explanation of why it worked: Because the keyspace (small integers) is incredibly limited, the hashes are highly vulnerable to dictionary attacks or rainbow table lookups. By extracting the hashed cookie and running it through a standard hash reversal tool, an attacker can easily uncover the underlying sequential pattern, predict future session IDs, and achieve session hijacking.
 
-## 9. XSS (DOM)
+## 10. XSS (DOM)
 
 ### Security Level: Low
 
@@ -528,7 +528,7 @@ Result: Successfully bypassed the strict server-side whitelist by utilizing the 
 Screenshot:
 <img width="1912" height="960" alt="XSS Dom High" src="https://github.com/user-attachments/assets/a79069d3-5999-46c5-8c0f-8182ce504fa4" />
 
-## 10. XSS (Reflected)
+## 11. XSS (Reflected)
 
 ### Security Level: Low
 
@@ -567,7 +567,7 @@ Result: Successfully bypassed the server's regular expression (Regex) filter by 
 Screenshot:
 <img width="1916" height="962" alt="XSS Reflected High" src="https://github.com/user-attachments/assets/18b3520c-4172-41b5-8da1-c4d085943157" />
 
-## 11. XSS (Stored)
+## 12. XSS (Stored)
 
 ### Security Level: Low
 
@@ -613,4 +613,77 @@ Screenshot:
 
 
 Explanation of why it worked: Client-side input length restrictions can be trivially removed by modifying the Document Object Model (DOM) using browser developer tools. Once the length restriction is removed, the backend Regex filter can be bypassed by utilizing a blacklist evasion technique. By injecting an alternative HTML tag that does not contain the word "script" (such as an `<svg>` tag with an `onload` event handler), the payload passes through the filter untouched and is permanently stored in the database, allowing for persistent cross-site scripting.
+
+## 13. CSP Bypass
+
+### Security Level: Low
+
+Payload Used: Chained Exploit (Unrestricted File Upload + CSP Bypass).
+1. Uploaded `hacked.js` (containing `alert("CSP Bypass Chained!");`) via the File Upload vulnerability.
+2. Injected the relative server path `../../hackable/uploads/hacked.js` into the CSP Bypass input field.
+
+Result: Successfully bypassed the Content Security Policy by leveraging the `'self'` whitelist directive, resulting in arbitrary JavaScript execution within the browser.
+
+Screenshot:
+<img width="1918" height="893" alt="CSP Bypass Low" src="https://github.com/user-attachments/assets/3bd84270-31eb-42bf-a6c5-20eb4778c299" />
+
+
+
+
+
+Explanation of why it worked: At the Low security level, the application's CSP includes the `'self'` directive (`script-src 'self' https://pastebin.com`), which implicitly trusts and executes any script hosted on the same origin server. By chaining a separate file upload vulnerability to drop a malicious JavaScript file directly onto the DVWA server, an attacker can bypass external domain restrictions entirely. When the local file path is passed to the CSP Bypass module, the browser sees the script originating from `'self'` and executes the payload without restriction.
+
+### Security Level: Medium
+
+Payload Used: `<script nonce="TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=">alert("Medium CSP Bypassed!")</script>`
+
+Result: Successfully bypassed the Content Security Policy by forging an authorized script execution token.
+
+Screenshot:
+<img width="1918" height="967" alt="Medium CSP" src="https://github.com/user-attachments/assets/78e4e23c-577a-4053-9155-7e79441a37ce" />
+
+
+
+
+
+
+Explanation of why it worked: The Medium security level attempts to secure inline scripts by implementing a CSP nonce (`script-src 'self' 'nonce-...'`). A nonce (Number Used Once) is intended to be a cryptographically secure, randomly generated token that changes on every single HTTP response. However, the developer hardcoded a static nonce value (`TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=`). Because the nonce never changes, an attacker can trivially read the value from the page source or response headers and include it as an attribute in their injected `<script>` tag, effectively neutralizing the CSP protection.
+
+### Security Level: High
+
+Payload Used: `<script nonce="TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=">alert("Medium CSP Bypassed!")</script>`
+
+Result: Successfully bypassed the Content Security Policy by forging an authorized script execution token.
+
+Screenshot:
+<img width="1918" height="967" alt="Medium CSP" src="https://github.com/user-attachments/assets/78e4e23c-577a-4053-9155-7e79441a37ce" />
+
+
+
+
+
+
+Explanation of why it worked: The Medium security level attempts to secure inline scripts by implementing a CSP nonce (`script-src 'self' 'nonce-...'`). A nonce (Number Used Once) is intended to be a cryptographically secure, randomly generated token that changes on every single HTTP response. However, the developer hardcoded a static nonce value (`TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=`). Because the nonce never changes, an attacker can trivially read the value from the page source or response headers and include it as an attribute in their injected `<script>` tag, effectively neutralizing the CSP protection.
+
+## 14. Javascript
+
+### Security Level: Low
+
+Payload Used: Chained Exploit (Unrestricted File Upload + CSP Bypass).
+1. Uploaded `hacked.js` (containing `alert("CSP Bypass Chained!");`) via the File Upload vulnerability.
+2. Injected the relative server path `../../hackable/uploads/hacked.js` into the CSP Bypass input field.
+
+Result: Successfully bypassed the Content Security Policy by leveraging the `'self'` whitelist directive, resulting in arbitrary JavaScript execution within the browser.
+
+Screenshot:
+<img width="1918" height="893" alt="CSP Bypass Low" src="https://github.com/user-attachments/assets/3bd84270-31eb-42bf-a6c5-20eb4778c299" />
+
+
+
+
+
+Explanation of why it worked: At the Low security level, the application's CSP includes the `'self'` directive (`script-src 'self' https://pastebin.com`), which implicitly trusts and executes any script hosted on the same origin server. By chaining a separate file upload vulnerability to drop a malicious JavaScript file directly onto the DVWA server, an attacker can bypass external domain restrictions entirely. When the local file path is passed to the CSP Bypass module, the browser sees the script originating from `'self'` and executes the payload without restriction.
+
+
+
 
