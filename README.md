@@ -73,6 +73,8 @@ Screenshot:
 
 Explanation of why it worked: On the medium level, the developer has put blacklists of operators like semi colon but the issue is he overlooked others such as | so they can still be exploited.
 
+Explanation of why the Low level payload failed: The Low level payload utilized a simple semicolon (;) to chain commands. The Medium security level introduces a server-side blacklist that specifically searches for and removes the && and ; characters, rendering the exact Low level payload inert.
+
 ### Security Level: High
 
 Payload Used: Browser itself, 127.0.0.1|cat /etc/password
@@ -87,6 +89,8 @@ Screenshot:
 
 
 Explanation of why it worked: The developer has done a great job making a proper blacklist, but he made a typo in the blacklist where he added a trailing space. Meaning if I just change the commands spaces to exploit this, I easily got past it.
+
+Explanation of why the Medium level payload failed: The Medium payload used the pipe operator (|). The High level expands the blacklist to include |, effectively blocking standard pipe injections from executing subsequent commands.
 
 ## 3. CSRF
 
@@ -121,6 +125,8 @@ Screenshot:
 
 Explanation of why it worked: The security check is broken, the developer isn't checking if the referer being used for the URL exactly matches, they are simply checking if 127.0.0.1 is anywhere in the line. Hence as long as the URL for the evil.html file contains 127.0.0.1 anywhere, it still goes through and the same exploit for changing password works.
 
+Explanation of why the Low level payload failed: The Low payload relied on blindly executing a URL from an external source. The Medium level introduces a check on the HTTP Referer header, ensuring the request appears to originate from the DVWA server itself rather than a third-party webpage.
+
 ### Security Level: High
 
 Payload Used: Chained attack, uses inbuilt XSS Stored module to bypass CSRF protection
@@ -148,6 +154,8 @@ Screenshot:
 
 
 Explanation of why it worked: There is an anti-CRF token (user token) that is being validated on the server, which external attacks like we used cannot read. But now we bypass this because we used stored XSS vulnerability on the same trusted origin. Because we run this javascript directly in the application, the code is executing within the trusted origin, bypassing the SOP thus executing the request.
+
+Explanation of why the Medium level payload failed: The Medium payload bypassed the Referer check by spoofing the URL string. The High level negates this by requiring a dynamically generated, anti-CSRF token (user_token) that changes on every request, making static URLs and Referer spoofing useless.
 
 ## 4. File Inclusion
 
@@ -184,6 +192,8 @@ Screenshot:
 
 Explanation of why it worked: At this security level, the security level is checking for strings such as "../" however there is a fatal flaw, that it only checks once. Meaning if I simply embed and repeat the ../ twice it will not be filtered and the command will still work as intended.
 
+Explanation of why the Low level payload failed: The Low payload used standard ../ directory traversal strings. The Medium level implements a filter that explicitly searches for and deletes the exact ../ and ..\ character sequences.
+
 ### Security Level: High
 
 Payload Used: ?page=file:///etc/passwd
@@ -201,6 +211,8 @@ Screenshot:
 
 
 Explanation of why it worked: At this security level, the security level is moving away from a blacklist to a white list where it's only allowing certain strings. However there is a loophole as PHP has built-in protocols, one being the file:// protocol, which goes right through the whitelist and in turn still fetches the path etc/passwd and dumps the information.
+
+Explanation of why the Medium level payload failed: The Medium payload nested the traversal strings (....//) to bypass the simple deletion filter. The High level abandons the blacklist approach entirely and uses a strict whitelist, requiring the input to start with either file or include.php.
 
 ## 5. File Upload
 
@@ -277,6 +289,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to restrict uploads by verifying the Content-Type header provided by the client (e.g., ensuring it is image/jpeg or image/png). However, it relies entirely on user-controllable input without validating the actual file contents or extension on the server side. By writing a Python script to construct the HTTP POST request, the Content-Type header can be manually spoofed to an accepted MIME type, tricking the application into storing the executable PHP script.
 
+Explanation of why the Low level payload failed: The Low payload successfully uploaded a raw .php file. The Medium level checks the HTTP Content-Type header and rejects any file that doesn't report itself as a valid image format (e.g., image/jpeg).
+
 
 ### Security Level: High
 
@@ -297,6 +311,8 @@ Screenshot:
 
 
 Explanation of why it worked: The validation was bypassed by forging a file header. The string GIF89a; acts as a valid magic byte signature for a GIF, satisfying the getimagesize() check, while the .jpg extension bypasses the name filter. Because the web server will not natively execute a .jpg file as PHP, the attack requires chaining with a Local File Inclusion vulnerability. The include()  function in PHP evaluates any PHP tags present within the included file, regardless of its extension, allowing the embedded web shell to execute and process arbitrary operating system commands.
+
+Explanation of why the Medium level payload failed: The Medium payload spoofed the Content-Type header while retaining a .php extension. The High level strictly requires an image file extension (like .jpg) and uses getimagesize() to cryptographically verify the file actually has a valid image signature (magic bytes).
 
 ## 6. Insecure CAPTCHA
 
@@ -323,6 +339,8 @@ Screenshot:
 
 Explanation of why it worked:The Medium security level attempts to patch the Low vulnerability by introducing a second parameter passed_captcha. The server verifies that both step=2 and passed_captcha=true are present in the POST request. However, the core logic flaw remains: the server relies entirely on client-side input for authorization. By utilizing browser developer tools to inject the passed_captcha parameter into the DOM alongside the modified step parameter, an attacker can trivially forge the necessary verification flags and bypass the CAPTCHA requirement completely.
 
+Explanation of why the Low level payload failed: The Low payload simply manipulated the step=2 variable. The Medium level adds a secondary verification check, requiring a new boolean parameter called passed_captcha=true to exist in the submission.
+
 ### Security Level: High
 
 Payload Used: Utilized browser Developer Tools (Network Conditions) to override the User-Agent header to reCAPTCHA, and manipulated the DOM to inject the hidden parameter `<input type="hidden" name="g-recaptcha-response" value="hidd3n_valu3">`.
@@ -344,6 +362,8 @@ Screenshot:
 
 
 Explanation of why it worked: The PHP source code contains a fallback condition that grants authorization if the g-recaptcha-response parameter exactly matches hidd3n_valu3 and the HTTP User-Agent header matches reCAPTCHA. By using browser developer tools to manually spoof the header and inject the required form data, an attacker can trivially bypass the intended CAPTCHA enforcement without needing an external proxy.
+
+Explanation of why the Medium level payload failed: The Medium payload manually injected the missing boolean parameter. The High level shifts the verification logic, requiring a specific User-Agent header and an exact expected string from the Google reCAPTCHA API (g-recaptcha-response).
 
 ## 7. SQL Injection
 
@@ -374,6 +394,8 @@ Screenshot:
 
 Explanation of why it worked: The developer believed that by making a drop down menu, it gets rid of any risk of an individual entering malicious code. But they made the error of removing quotation marks around id, meaning I can simply go into developer tools and add the same or condition into any dropdown condition and it will execute it regardless.
 
+Explanation of why the Low level payload failed: The Low payload was typed directly into a text box and used quotation marks (') to escape the query context. The Medium level removes the text box in favor of a dropdown menu to restrict input, and runs the input through mysqli_real_escape_string() to neutralize quotation marks.
+
 ### Security Level: High
 
 Payload Used: `' OR 1=1 #` entered into the input box.
@@ -387,6 +409,8 @@ Screenshot:
 
 
 Explanation of why it worked: The developer believed that by making a separate window for input and putting a LIMIT 1, any automated script would break. The issue is as a human we can easily circumvent this, because the query itself is unchanged frmo how it is at low level, we merely just need to once again inject the `' OR 1=1 #` where the # gets rid of the LIMIT 1 and the query is run and outputs information to us.
+
+Explanation of why the Medium level payload failed: The Medium payload intercepted the dropdown via proxy/DOM. The High level attempts to disrupt automated tools by moving the input vector to a completely separate session window and appending a strict LIMIT 1 to the query output.
 
 ## 8. SQL Injection (Blind)
 
@@ -421,6 +445,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to stop injection by utilizing a dropdown menu and escaping input strings. However, because the backend query treats the input as an integer `WHERE user_id = $id`, it does not require enclosing quotes to break the data context. By using browser developer tools to manually modify the value of a dropdown `<option>`, an attacker can inject raw boolean logic (`AND 1=1`) that cleanly bypasses the escaping function and forces the database to evaluate the appended condition.
 
+Explanation of why the Low level payload failed: The Low payload utilized single quotes. Similar to the standard SQLi module, the Medium level restricts input via a dropdown menu and neutralizes quotes using mysqli_real_escape_string().
+
 ### Security Level: High
 
 Payload Used: 
@@ -439,6 +465,8 @@ Screenshot:
 
 
 Explanation of why it worked: The backend PHP code still dynamically concatenates the cookie value into the SQL query `WHERE user_id = '$id' LIMIT 1` without proper logic sanitization. By using browser developer tools to manually overwrite the `id` cookie with classic logic payloads (`1' AND 1=1 #`), an attacker can force the backend database to evaluate the appended boolean conditions, inferring the results upon page refresh.
+
+Explanation of why the Medium level payload failed: The Medium payload relied on DOM manipulation of the POST request. The High level completely removes the injection vector from the GET/POST parameters and instead tracks the target id strictly through a background browser cookie.
 
 ## 9. Weak Session IDs
 
@@ -473,6 +501,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to improve upon the simple sequential counter by using the PHP `time()` function to generate the session ID. While the resulting 10-digit number appears more complex, it is not cryptographically random. Unix time is completely predictable. An attacker who knows approximately when a victim authenticated can easily brute-force the session ID by generating and testing the timestamps for that specific time window, leading to session hijacking.
 
+Explanation of why the Low level payload failed: The Low level used a basic sequential counter (1, 2, 3), making the next ID instantly predictable. The Medium level calculates the ID based on the exact Unix timestamp, requiring the attacker to know the specific second the user logged in.
+
 ### Security Level: High
 
 Payload Used: Extracted the `dvwaSession` cookie via Developer Tools and reverse-engineered the value using an MD5 hash cracking tool (e.g., CrackStation).
@@ -489,6 +519,8 @@ Screenshot:
 
 
 Explanation of why it worked: Because the keyspace (small integers) is incredibly limited, the hashes are highly vulnerable to dictionary attacks or rainbow table lookups. By extracting the hashed cookie and running it through a standard hash reversal tool, an attacker can easily uncover the underlying sequential pattern, predict future session IDs, and achieve session hijacking.
+
+Explanation of why the Medium level payload failed: The Medium level IDs were plainly readable timestamps. The High level obfuscates this by passing an incrementing counter through an MD5 hashing algorithm, hiding the sequential nature of the generation.
 
 ## 10. XSS (DOM)
 
@@ -519,6 +551,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to mitigate XSS by implementing a server-side blacklist that searches for and blocks the literal string `<script`. This is an insecure design pattern because it fails to account for alternative HTML execution contexts. By utilizing an `<img>` tag with an `onerror` event handler, an attacker can execute JavaScript without ever using a `<script>` tag. Prepending `</select>` to the payload forces the browser to break out of the intended dropdown menu element, allowing the subsequent image tag to be rendered and the malicious event handler to fire.
 
+Explanation of why the Low level payload failed: The Low payload used a standard <script> tag. The Medium level utilizes a server-side stripos() function to strictly blacklist and remove the literal string <script.
+
 ### Security Level: High
 
 Payload Used: `English#</select><script>alert("Hacked!")</script>` injected into the `default` URL parameter.
@@ -527,6 +561,10 @@ Result: Successfully bypassed the strict server-side whitelist by utilizing the 
 
 Screenshot:
 <img width="1912" height="960" alt="XSS Dom High" src="https://github.com/user-attachments/assets/a79069d3-5999-46c5-8c0f-8182ce504fa4" />
+
+Explanation of why it worked: The vulnerability resides purely in the client-side Document Object Model (DOM). By placing the malicious payload after a URL fragment identifier (`#`), the payload is never transmitted to the backend server, completely bypassing the PHP whitelist. The client-side JavaScript (`document.location.href`), however, processes the entire URL string including the fragment. It extracts the hidden payload and insecurely writes it into the DOM, allowing the attacker to break out of the `<select>` HTML context and execute arbitrary code.
+
+Explanation of why the Medium level payload failed: The Medium payload broke out of the <select> tag and used an <img> event handler. The High level introduces a strict server-side whitelist, rejecting any URL parameter that isn't an exact match for one of the pre-approved languages (e.g., English, French).
 
 ## 11. XSS (Reflected)
 
@@ -558,6 +596,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to stop XSS by passing the user input through PHP's `str_replace()` function to strip out `<script>` tags. However, `str_replace()` is case-sensitive. The developer failed to use a case-insensitive function (like `str_ireplace()`) or implement proper HTML entity encoding. By manipulating the capitalization of the injected tags (e.g., `<Script>`), an attacker can evade the exact-match filter while still providing a payload that the victim's browser will recognize and execute as valid HTML/JavaScript.
 
+Explanation of why the Low level payload failed: The Low payload utilized the exact lowercase tag <script>. The Medium level uses the str_replace() function to find and delete that exact lowercase string.
+
 ### Security Level: High
 
 Payload Used: `<svg onload=alert("Hacked!")>` entered into the "name" input field.
@@ -566,6 +606,10 @@ Result: Successfully bypassed the server's regular expression (Regex) filter by 
 
 Screenshot:
 <img width="1916" height="962" alt="XSS Reflected High" src="https://github.com/user-attachments/assets/18b3520c-4172-41b5-8da1-c4d085943157" />
+
+Explanation of why it worked: Because the developer only blacklisted the specific "script" string pattern, the application remains vulnerable to alternative XSS vectors. By injecting an `<svg>` tag with an `onload` event handler, an attacker can provide a payload that completely evades the Regex pattern while still forcing the victim's browser to execute the embedded JavaScript upon rendering the reflected HTML.
+
+Explanation of why the Medium level payload failed: The Medium payload bypassed the filter by using mixed-case letters (<Script>). The High level upgrades the defense to preg_replace() with a case-insensitive regular expression, wiping out any variation of the word "script".
 
 ## 12. XSS (Stored)
 
@@ -598,6 +642,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to secure the application by aggressively sanitizing the "Message" parameter and applying a case-sensitive `<script>` filter to the "Name" parameter. Furthermore, it implements a client-side HTML restriction (`maxlength="10"`) on the Name input to prevent long payloads.
 
+Explanation of why the Low level payload failed: The Low payload injected a script directly into the large "Message" box. The Medium level applies strict strip_tags() sanitization to the message box and implements a client-side maxlength="10" restriction on the unprotected "Name" box.
+
 ### Security Level: High
 
 Payload Used: `<svg onload=alert("High Stored XSS!")>` entered into the "Name" input field (after bypassing client-side length restrictions).
@@ -613,6 +659,8 @@ Screenshot:
 
 
 Explanation of why it worked: Client-side input length restrictions can be trivially removed by modifying the Document Object Model (DOM) using browser developer tools. Once the length restriction is removed, the backend Regex filter can be bypassed by utilizing a blacklist evasion technique. By injecting an alternative HTML tag that does not contain the word "script" (such as an `<svg>` tag with an `onload` event handler), the payload passes through the filter untouched and is permanently stored in the database, allowing for persistent cross-site scripting.
+
+Explanation of why the Medium level payload failed: The Medium payload bypassed the length limit and used a mixed-case <Script> tag. The High level implements the case-insensitive Regex filter on the "Name" box to catch all spelling variations of the tag.
 
 ## 13. CSP Bypass
 
@@ -649,6 +697,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to secure inline scripts by implementing a CSP nonce (`script-src 'self' 'nonce-...'`). A nonce (Number Used Once) is intended to be a cryptographically secure, randomly generated token that changes on every single HTTP response. However, the developer hardcoded a static nonce value (`TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=`). Because the nonce never changes, an attacker can trivially read the value from the page source or response headers and include it as an attribute in their injected `<script>` tag, effectively neutralizing the CSP protection.
 
+Explanation of why the Low level payload failed: The Low payload leveraged an external Pastebin link that was insecurely whitelisted. The Medium level completely removes the external domain whitelist and requires inline scripts to contain a specific, verified nonce attribute.
+
 ### Security Level: High
 
 Payload Used: Injected via the browser console:
@@ -666,6 +716,8 @@ Screenshot:
 
 
 Explanation of why it worked: The application utilizes a JSONP endpoint (`source/jsonp.php`) to fetch data. This endpoint insecurely reflects the user-controlled `callback` parameter directly into its JavaScript response. Because this vulnerable endpoint is hosted on the local server, it is implicitly trusted by the `'self'` CSP directive. By manually constructing a script tag in the DOM that points to this endpoint with a malicious payload in the callback parameter, an attacker tricks the server into serving arbitrary JavaScript that the CSP authorizes and the browser executes.
+
+Explanation of why the Medium level payload failed: The Medium payload simply copied the static, hardcoded nonce. The High level removes the nonce entirely and sets a strict 'self' policy, completely relying on JSONP endpoint requests for dynamic script execution.
 
 ## 14. Javascript
 
@@ -702,6 +754,8 @@ Screenshot:
 
 Explanation of why it worked: The Medium security level attempts to secure the token generation by moving the logic into an external, minified JavaScript file (`medium.js`). This relies on "security through obscurity," which is an ineffective defense mechanism. Because the client's browser must still download and execute the script to function, an attacker can easily locate the file, reverse-engineer the string manipulation logic, and manually execute the exposed `do_elsesomething()` function from the developer console to generate a valid token for any arbitrary input.
 
+Explanation of why the Low level payload failed: The Low payload manually called generate_token(), which was easily visible in the HTML source. The Medium level hides the token generation logic inside an external, minified JavaScript file and renames the functions to obfuscate the process.
+
 ### Security Level: High
 
 Payload Used: Typed `success` into the input field and manually executed `token_part_1("success", true)` and `token_part_2("XX")` via the browser console before submitting.
@@ -719,6 +773,8 @@ Screenshot:
 
 
 Explanation of why it worked: Obfuscation provides no actual security ("security through obscurity"). Because the logic must run on the client side, the browser automatically unpacks the code and loads the functions into the global namespace. An attacker does not need to reverse-engineer the complex math or hashing algorithms; they can simply open the developer tools and manually call the exposed `token_part` functions in the correct sequence to generate a valid token for any arbitrary input.
+
+Explanation of why the Medium level payload failed: The Medium payload successfully executed the newly discovered external function. The High level utilizes a heavy JavaScript packer to turn the code into unreadable gibberish and splits the token generation into multiple dependent steps to confuse the attacker.
 
 
 
