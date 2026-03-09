@@ -651,19 +651,21 @@ Explanation of why it worked: The Medium security level attempts to secure inlin
 
 ### Security Level: High
 
-Payload Used: `<script nonce="TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=">alert("Medium CSP Bypassed!")</script>`
+Payload Used: Injected via the browser console:
+  `var s = document.createElement("script"); s.src = "source/jsonp.php?callback=alert('High CSP Bypassed!');//"; document.body.appendChild(s);`
 
-Result: Successfully bypassed the Content Security Policy by forging an authorized script execution token.
+Result: Successfully bypassed the strict `'self'` Content Security Policy by leveraging an insecure JSONP endpoint on the same origin.
 
 Screenshot:
-<img width="1918" height="967" alt="Medium CSP" src="https://github.com/user-attachments/assets/78e4e23c-577a-4053-9155-7e79441a37ce" />
+<img width="1918" height="903" alt="CSP high" src="https://github.com/user-attachments/assets/27c76061-d07a-42aa-b8a2-ab286b2f35dc" />
 
 
 
 
 
 
-Explanation of why it worked: The Medium security level attempts to secure inline scripts by implementing a CSP nonce (`script-src 'self' 'nonce-...'`). A nonce (Number Used Once) is intended to be a cryptographically secure, randomly generated token that changes on every single HTTP response. However, the developer hardcoded a static nonce value (`TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=`). Because the nonce never changes, an attacker can trivially read the value from the page source or response headers and include it as an attribute in their injected `<script>` tag, effectively neutralizing the CSP protection.
+
+Explanation of why it worked: The application utilizes a JSONP endpoint (`source/jsonp.php`) to fetch data. This endpoint insecurely reflects the user-controlled `callback` parameter directly into its JavaScript response. Because this vulnerable endpoint is hosted on the local server, it is implicitly trusted by the `'self'` CSP directive. By manually constructing a script tag in the DOM that points to this endpoint with a malicious payload in the callback parameter, an attacker tricks the server into serving arbitrary JavaScript that the CSP authorizes and the browser executes.
 
 ## 14. Javascript
 
