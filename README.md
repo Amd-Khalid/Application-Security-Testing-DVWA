@@ -783,8 +783,6 @@ Explanation of why the Medium level payload failed: The Medium payload successfu
 Command: docker ps
 
 Purpose: Lists all currently running Docker containers, showing their IDs, image names, port mappings, and status.
-```CONTAINER ID   IMAGE                  COMMAND      CREATED       STATUS         PORTS                                     NAMES```
-```4701d4563ea3   vulnerables/web-dvwa   "/main.sh"   12 days ago   Up 3 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   dvwa```
 
 
 
