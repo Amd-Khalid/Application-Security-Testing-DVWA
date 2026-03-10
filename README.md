@@ -555,7 +555,7 @@ Explanation of why the Low level payload failed: The Low payload used a standard
 
 ### Security Level: High
 
-Payload Used: English#</select><script>alert("Hacked!")</script> injected into the `default` URL parameter.
+Payload Used: `English#</select><script>alert("Hacked!")</script>` injected into the `default` URL parameter.
 
 Result: Successfully bypassed the strict server-side whitelist by utilizing the URL fragment identifier (`#`), resulting in arbitrary JavaScript execution in the DOM.
 
@@ -564,7 +564,7 @@ Screenshot:
 
 Explanation of why it worked: The vulnerability resides purely in the client-side Document Object Model (DOM). By placing the malicious payload after a URL fragment identifier (`#`), the payload is never transmitted to the backend server, completely bypassing the PHP whitelist. The client-side JavaScript (`document.location.href`), however, processes the entire URL string including the fragment. It extracts the hidden payload and insecurely writes it into the DOM, allowing the attacker to break out of the `<select>` HTML context and execute arbitrary code.
 
-Explanation of why the Medium level payload failed: The Medium payload broke out of the <select> tag and used an <img> event handler. The High level introduces a strict server-side whitelist, rejecting any URL parameter that isn't an exact match for one of the pre-approved languages (e.g., English, French).
+Explanation of why the Medium level payload failed: The Medium payload broke out of the <select> tag and used an <img> event handler. The High level introduces a strict server-side whitelist, rejecting any URL parameter that isn't an exact match for one of the pre-approved languages (e.g., English, French)
 
 ## 11. XSS (Reflected)
 
