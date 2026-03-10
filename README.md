@@ -555,7 +555,7 @@ Explanation of why the Low level payload failed: The Low payload used a standard
 
 ### Security Level: High
 
-Payload Used: `English#</select><script>alert("Hacked!")</script>` injected into the `default` URL parameter.
+Payload Used: ```English#</select><script>alert("Hacked!")</script>``` injected into the `default` URL parameter.
 
 Result: Successfully bypassed the strict server-side whitelist by utilizing the URL fragment identifier (`#`), resulting in arbitrary JavaScript execution in the DOM.
 
@@ -570,7 +570,7 @@ Explanation of why the Medium level payload failed: The Medium payload broke out
 
 ### Security Level: Low
 
-Payload Used: `<script>alert("Hacked!")</script>` entered into the "name" input field.
+Payload Used: ```<script>alert("Hacked!")</script>``` entered into the "name" input field.
 
 Result: Successfully executed arbitrary JavaScript within the browser. The server reflected the unsanitized input directly into the page's HTML structure.
 
