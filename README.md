@@ -575,7 +575,8 @@ Payload Used: ```<script>alert("Hacked!")</script>``` entered into the "name" in
 Result: Successfully executed arbitrary JavaScript within the browser. The server reflected the unsanitized input directly into the page's HTML structure.
 
 Screenshot:
-<img width="1917" height="957" alt="XSS Reflected Low" src="https://github.com/user-attachments/assets/36a006da-f94a-4b7a-8543-78116753bf86" />
+<img width="1917" height="957" alt="XSS Reflected Low" src="https://github.com/user-attachments/assets/58dd5bfd-b24c-40d6-a14a-c3f2e41fed64" />
+
 
 Explanation of why it worked: At the Low security level, the application takes the user-supplied `name` parameter via a GET request and echoes it directly onto the page without any validation, filtering, or output encoding. Because the browser cannot distinguish between the developer's intended HTML and the attacker's injected script, it simply executes the reflected `<script>` tags as code.
 
