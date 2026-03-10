@@ -731,6 +731,14 @@ Explanation of why it worked: Obfuscation provides no actual security ("security
 
 Explanation of why the Medium level payload failed: The Medium payload successfully executed the newly discovered external function. The High level utilizes a heavy JavaScript packer to turn the code into unreadable gibberish and splits the token generation into multiple dependent steps to confuse the attacker.
 
+## Part 5: Docker Inspection Tasks
+
+### 1. Command Execution & Output Documentation
+
+Command: docker ps
+Pu
+
+
 
 
 
