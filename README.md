@@ -736,7 +736,277 @@ Explanation of why the Medium level payload failed: The Medium payload successfu
 ### 1. Command Execution & Output Documentation
 
 Command: docker ps
-Pu
+Purpose: Lists all currently running Docker containers, showing their IDs, image names, port mappings, and status.
+Output:
+```bash
+CONTAINER ID   IMAGE                  COMMAND      CREATED       STATUS              PORTS                                     NAMES
+4701d4563ea3   vulnerables/web-dvwa   "/main.sh"   12 days ago   Up About a minute   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   dvwa
+```
+
+Command: docker inspect dvwa
+Purpose: Returns a detailed JSON array containing low-level configuration data about the container, including its internal IP address, mounted volumes, environment variables, and security settings.
+Output:
+```
+[
+    {
+        "Id": "4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078",
+        "Created": "2026-02-25T15:49:07.349963164Z",
+        "Path": "/main.sh",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 407,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-03-10T10:28:28.009116389Z",
+            "FinishedAt": "2026-03-10T10:26:02.5621711Z"
+        },
+        "Image": "sha256:ab0d83586b6e8799bb549ab91914402e47e3bcc7eea0c5cdf43755d56150cc6a",
+        "ResolvConfPath": "/var/lib/docker/containers/4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078/hostname",
+        "HostsPath": "/var/lib/docker/containers/4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078/hosts",
+        "LogPath": "/var/lib/docker/containers/4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078/4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078-json.log",
+        "Name": "/dvwa",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "bridge",
+            "PortBindings": {
+                "80/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                11,
+                144
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "4701d4563ea33832567e8e743333c951f5ed2b9bfb64eb2feb6e4ec793e98078",
+                "LowerDir": "/var/lib/docker/overlay2/2f0fd4a698ad5695f4636230412192ec125918a1fc709cb850b7c62b5ee6d8c4-init/diff:/var/lib/docker/overlay2/61025284571bd45e9707250f065923891bd6e6aa601122a3d75429b6ffa9e454/diff:/var/lib/docker/overlay2/d05f89784f17f9ca4acfd79a23a6c2091edbddfda87e5e0f94178261bda7a4e9/diff:/var/lib/docker/overlay2/02ee0ce4a319211e644b1e00ba4bfbdf6b3d51c24c5b145e61d6d440b705e020/diff:/var/lib/docker/overlay2/f2111e26dece1774bb5f41a6354fe82ce07adfca0e4803da1fd77bb10182a808/diff:/var/lib/docker/overlay2/b36a93ea440945da14f6716a850e5b1c281f656150035c4cfc79a84ce4150f95/diff:/var/lib/docker/overlay2/bde0243c97155b2f8aaba6a3d867b0ab4c266cfde7c383db57521e5db97d5c71/diff:/var/lib/docker/overlay2/e14d3be583f04ba4a2b6d48c6637ef051949f7683e75f49672ab08437df8cd17/diff:/var/lib/docker/overlay2/01d444121dfa462c332501257959cad95f1eb8cb38673bd4a0d2f3da10fdbeb0/diff",
+                "MergedDir": "/var/lib/docker/overlay2/2f0fd4a698ad5695f4636230412192ec125918a1fc709cb850b7c62b5ee6d8c4/merged",
+                "UpperDir": "/var/lib/docker/overlay2/2f0fd4a698ad5695f4636230412192ec125918a1fc709cb850b7c62b5ee6d8c4/diff",
+                "WorkDir": "/var/lib/docker/overlay2/2f0fd4a698ad5695f4636230412192ec125918a1fc709cb850b7c62b5ee6d8c4/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "4701d4563ea3",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "80/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+            ],
+            "Cmd": null,
+            "Image": "vulnerables/web-dvwa",
+            "Volumes": null,
+            "WorkingDir": "",
+            "Entrypoint": [
+                "/main.sh"
+            ],
+            "Labels": {
+                "maintainer": "opsxcq@strm.sh"
+            },
+            "StopTimeout": 1
+        },
+        "NetworkSettings": {
+            "SandboxID": "47a9c94403bbf9f0abab10a71ae7ee77ce83cedd88bf8820e407872176cb0572",
+            "SandboxKey": "/var/run/docker/netns/47a9c94403bb",
+            "Ports": {
+                "80/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8080"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "8080"
+                    }
+                ]
+            },
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "825a731b2ac61e1f5383cc3c7e653246a4d3f659405cf3b19c85522e95774eaa",
+                    "EndpointID": "e789f60bf41afac14dc7e6cf8516e5ffcc7573c0b81be1f773c91d69cf8af394",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "MacAddress": "52:10:fb:c3:03:cf",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        }
+    }
+]
+```
+Command: docker logs dvwa
+Purpose: Displays the standard output (STDOUT) and standard error (STDERR) generated by the application running inside the container. For DVWA, this reveals the Apache web server access logs and database startup events.
+Output: (Truncated for readability as output was very large)
+```
+[+] Starting mysql...
+Starting MariaDB database server: mysqld . . . . . ..
+[+] Starting apache
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+Starting Apache httpd web server: apache2.
+==> /var/log/apache2/access.log <==
+172.17.0.1 - - [25/Feb/2026:15:49:26 +0000] "GET / HTTP/1.1" 302 337 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+172.17.0.1 - - [25/Feb/2026:15:49:26 +0000] "GET /login.php HTTP/1.1" 200 1049 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+172.17.0.1 - - [25/Feb/2026:15:49:26 +0000] "GET /dvwa/css/login.css HTTP/1.1" 200 741 "http://localhost:8080/login.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+172.17.0.1 - - [25/Feb/2026:15:49:26 +0000] "GET /dvwa/images/login_logo.png HTTP/1.1" 200 9375 "http://localhost:8080/login.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+172.17.0.1 - - [25/Feb/2026:15:49:26 +0000] "GET /favicon.ico HTTP/1.1" 200 1706 "http://localhost:8080/login.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+.......
+````
+
+Command: docker exec -it dvwa /bin/bash
+Purpose: Opens an interactive (-it) bash shell as the root user directly inside the running container, allowing for direct interaction with the underlying Linux filesystem.
+Output: root@4701d4563ea3:/#
+
+Command: ls /var/www/html
+Purpose: Lists the contents of the Apache web server's root directory, revealing the source code and folder structure of the DVWA application.
+Output:
+```
+HANGELOG.md  README.md  config  dvwa      favicon.ico  ids_log.php  instructions.php  logout.php  phpinfo.php  security.php  vulnerabilities
+COPYING.txt   about.php  docs    external  hackable     index.php    login.php         php.ini     robots.txt   setup.php
+```
+### Infrastructure Explanations:
+
+Q. Where are Application Files Stored?
+Inside the Docker container, the application files are stored in the /var/www/html directory. This is the standard, default web root path for Apache web servers running on Debian/Ubuntu-based Linux distributions. When we mapped port 8080 on our host machine to port 80 on the container, we were telling Docker to route our browser traffic directly to the index.php file located inside this specific directory.
+
+Q. What backend technology does DVWA use?
+DVWA is built on the classic LAMP stack:
+
+Linux: The underlying operating system running inside the container (typically Debian or Ubuntu).
+Apache: The web server software handling HTTP requests and serving the webpages.
+MySQL / MariaDB: The relational database management system storing user credentials, guestbook entries, and session data.
+PHP: The server-side scripting language used to write the application logic, process form data, and dynamically generate the HTML. (The vulnerabilities we exploited were primarily poorly written PHP functions).
+
+Q. How does Docker isolate the environment?
+
+Unlike a traditional Virtual Machine (VM) that requires a heavy, complete guest operating system, Docker isolates the DVWA environment using Linux kernel features, specifically Namespaces and Control Groups (cgroups).
+
+Namespaces provide process-level isolation. They ensure that the DVWA container has its own isolated network stack (its own IP address), its own process tree (PID 1 inside the container is just the DVWA script, not the host machine's init system), and its own isolated filesystem mount points (like /var/www/html).
+
+Control Groups (cgroups) provide resource limitation, ensuring the containerized application cannot consume 100% of the host machine's CPU or RAM.
+
+This architecture allows DVWA to run a deliberately vulnerable, highly dangerous application directly on our host hardware without any risk of the malware or exploits (like our Command Injection or File Upload web shells) breaking out and infecting our actual computer.
 
 
 
