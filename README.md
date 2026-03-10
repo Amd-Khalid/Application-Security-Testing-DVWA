@@ -776,6 +776,14 @@ Explanation of why it worked: Obfuscation provides no actual security ("security
 
 Explanation of why the Medium level payload failed: The Medium payload successfully executed the newly discovered external function. The High level utilizes a heavy JavaScript packer to turn the code into unreadable gibberish and splits the token generation into multiple dependent steps to confuse the attacker.
 
+## Part 5: Docker Inspection Tasks
+### 1. Command Execution & Output Documentation
+
+Command: docker ps
+Purpose: Lists all currently running Docker containers, showing their IDs, image names, port mappings, and status.
+```CONTAINER ID   IMAGE                  COMMAND      CREATED       STATUS         PORTS                                     NAMES```
+```4701d4563ea3   vulnerables/web-dvwa   "/main.sh"   12 days ago   Up 3 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   dvwa```
+
 
 
 
