@@ -587,7 +587,6 @@ Explanation of why it worked: At the Low security level, the application takes t
 Payload Used: `<Script>alert("Hacked!")</script>` entered into the "name" input field.
 
 Result: Successfully bypassed the server's blacklist filter by utilizing mixed-case HTML tags, resulting in arbitrary JavaScript execution within the browser.
-* **Screenshot:**
 
 Screenshot:
 <img width="1916" height="966" alt="XSS Reflected Medium" src="https://github.com/user-attachments/assets/095e977b-461e-4051-b352-1118a7928521" />
@@ -622,9 +621,6 @@ Result: Successfully injected and stored arbitrary JavaScript permanently into t
 Screenshot:
 <img width="1918" height="966" alt="XSS Stored Low" src="https://github.com/user-attachments/assets/f5fe1cfd-64fe-4b6c-87b5-88faaa50ffe5" />
 
-
-
-
 Explanation of why it worked: At the Low security level, the application takes user input from the guestbook form and stores it directly into the backend database without any sanitization. When the application retrieves these entries to display them on the page, it fails to HTML-encode the output. As a result, the victim's browser interprets the stored `<script>` tags as executable code rather than plain text, resulting in a persistent XSS vulnerability.
 
 ### Security Level: Medium
@@ -635,10 +631,6 @@ Result: Successfully bypassed both the client-side character limit and the serve
 
 Screenshot:
 <img width="1918" height="966" alt="XSS Stored Medium" src="https://github.com/user-attachments/assets/81c889c8-5347-49bc-afcd-4b3d137f9ca1" />
-
-
-
-
 
 Explanation of why it worked: The Medium security level attempts to secure the application by aggressively sanitizing the "Message" parameter and applying a case-sensitive `<script>` filter to the "Name" parameter. Furthermore, it implements a client-side HTML restriction (`maxlength="10"`) on the Name input to prevent long payloads.
 
@@ -652,11 +644,6 @@ Result: Successfully bypassed both the client-side character limit and the serve
 
 Screenshot:
 <img width="1902" height="962" alt="XSS Stored High" src="https://github.com/user-attachments/assets/ab168d9f-bddc-4e30-9be5-09d690e5a51f" />
-
-
-
-
-
 
 Explanation of why it worked: Client-side input length restrictions can be trivially removed by modifying the Document Object Model (DOM) using browser developer tools. Once the length restriction is removed, the backend Regex filter can be bypassed by utilizing a blacklist evasion technique. By injecting an alternative HTML tag that does not contain the word "script" (such as an `<svg>` tag with an `onload` event handler), the payload passes through the filter untouched and is permanently stored in the database, allowing for persistent cross-site scripting.
 
@@ -675,10 +662,6 @@ Result: Successfully bypassed the Content Security Policy by leveraging the `'se
 Screenshot:
 <img width="1918" height="893" alt="CSP Bypass Low" src="https://github.com/user-attachments/assets/3bd84270-31eb-42bf-a6c5-20eb4778c299" />
 
-
-
-
-
 Explanation of why it worked: At the Low security level, the application's CSP includes the `'self'` directive (`script-src 'self' https://pastebin.com`), which implicitly trusts and executes any script hosted on the same origin server. By chaining a separate file upload vulnerability to drop a malicious JavaScript file directly onto the DVWA server, an attacker can bypass external domain restrictions entirely. When the local file path is passed to the CSP Bypass module, the browser sees the script originating from `'self'` and executes the payload without restriction.
 
 ### Security Level: Medium
@@ -689,11 +672,6 @@ Result: Successfully bypassed the Content Security Policy by forging an authoriz
 
 Screenshot:
 <img width="1918" height="967" alt="Medium CSP" src="https://github.com/user-attachments/assets/78e4e23c-577a-4053-9155-7e79441a37ce" />
-
-
-
-
-
 
 Explanation of why it worked: The Medium security level attempts to secure inline scripts by implementing a CSP nonce (`script-src 'self' 'nonce-...'`). A nonce (Number Used Once) is intended to be a cryptographically secure, randomly generated token that changes on every single HTTP response. However, the developer hardcoded a static nonce value (`TmV2ZXIgZ29pbmcgdG8gZ2l2ZSB5b3UgdXA=`). Because the nonce never changes, an attacker can trivially read the value from the page source or response headers and include it as an attribute in their injected `<script>` tag, effectively neutralizing the CSP protection.
 
@@ -708,12 +686,6 @@ Result: Successfully bypassed the strict `'self'` Content Security Policy by lev
 
 Screenshot:
 <img width="1918" height="903" alt="CSP high" src="https://github.com/user-attachments/assets/27c76061-d07a-42aa-b8a2-ab286b2f35dc" />
-
-
-
-
-
-
 
 Explanation of why it worked: The application utilizes a JSONP endpoint (`source/jsonp.php`) to fetch data. This endpoint insecurely reflects the user-controlled `callback` parameter directly into its JavaScript response. Because this vulnerable endpoint is hosted on the local server, it is implicitly trusted by the `'self'` CSP directive. By manually constructing a script tag in the DOM that points to this endpoint with a malicious payload in the callback parameter, an attacker tricks the server into serving arbitrary JavaScript that the CSP authorizes and the browser executes.
 
@@ -730,11 +702,6 @@ Result: Successfully bypassed the token validation by manually forcing the clien
 Screenshot:
 <img width="1918" height="965" alt="Javascript Low" src="https://github.com/user-attachments/assets/3c409ce1-049a-4daa-bb36-385bc90e4e13" />
 
-
-
-
-
-
 Explanation of why it worked: At the Low security level, the application relies entirely on client-side JavaScript to generate a security token (an MD5 hash of the submitted phrase). The developer failed to attach the `generate_token()` function to an `onChange` or `onSubmit` event listener, causing the form to submit stale tokens when the user changes the text. Because the security logic is completely exposed and executed within the browser's Document Object Model (DOM), an attacker can easily read the source code, type the desired input, and manually execute the token generation function via the developer console to satisfy the server's validation checks.
 
 ### Security Level: Medium
@@ -745,12 +712,6 @@ Result: Successfully bypassed the token validation by manually forcing the exter
 
 Screenshot:
 <img width="1918" height="962" alt="Javascript High" src="https://github.com/user-attachments/assets/7af1a5b6-5294-4393-87ca-99be17bb846c" />
-
-
-
-
-
-
 
 Explanation of why it worked: The Medium security level attempts to secure the token generation by moving the logic into an external, minified JavaScript file (`medium.js`). This relies on "security through obscurity," which is an ineffective defense mechanism. Because the client's browser must still download and execute the script to function, an attacker can easily locate the file, reverse-engineer the string manipulation logic, and manually execute the exposed `do_elsesomething()` function from the developer console to generate a valid token for any arbitrary input.
 
@@ -764,13 +725,6 @@ Result: Successfully bypassed the token validation by interacting directly with 
 
 Screenshot:
 <img width="1918" height="973" alt="Javascript Actual High" src="https://github.com/user-attachments/assets/77c68b21-6342-4699-910e-2fd2d2b39cbe" />
-
-
-
-
-
-
-
 
 Explanation of why it worked: Obfuscation provides no actual security ("security through obscurity"). Because the logic must run on the client side, the browser automatically unpacks the code and loads the functions into the global namespace. An attacker does not need to reverse-engineer the complex math or hashing algorithms; they can simply open the developer tools and manually call the exposed `token_part` functions in the correct sequence to generate a valid token for any arbitrary input.
 
