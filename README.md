@@ -649,8 +649,10 @@ Explanation of why the Medium level payload failed: The Medium payload bypassed 
 ### Security Level: Low
 
 Payload Used: Chained Exploit (Unrestricted File Upload + CSP Bypass).
+
 1. Uploaded `hacked.js` (containing `alert("CSP Bypass Chained!");`) via the File Upload vulnerability.
-2. Injected the relative server path `../../hackable/uploads/hacked.js` into the CSP Bypass input field.
+
+3. Injected the relative server path `../../hackable/uploads/hacked.js` into the CSP Bypass input field.
 
 Result: Successfully bypassed the Content Security Policy by leveraging the `'self'` whitelist directive, resulting in arbitrary JavaScript execution within the browser.
 
