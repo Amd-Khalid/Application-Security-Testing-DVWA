@@ -575,6 +575,7 @@ Payload Used: ```<script>alert("Hacked!")</script>``` entered into the "name" in
 Result: Successfully executed arbitrary JavaScript within the browser. The server reflected the unsanitized input directly into the page's HTML structure.
 
 Screenshot:
+<img width="1917" height="957" alt="XSS Reflected Low" src="https://github.com/user-attachments/assets/5014d2a1-9929-4c2b-866c-01c9aa499602" />
 
 
 
@@ -587,6 +588,7 @@ Payload Used: `<Script>alert("Hacked!")</script>` entered into the "name" input 
 Result: Successfully bypassed the server's blacklist filter by utilizing mixed-case HTML tags, resulting in arbitrary JavaScript execution within the browser.
 
 Screenshot:
+<img width="1916" height="966" alt="XSS Reflected Medium" src="https://github.com/user-attachments/assets/5fea96b7-cdb4-464d-9101-aa5ef0c1093b" />
 
 
 Explanation of why it worked: The Medium security level attempts to stop XSS by passing the user input through PHP's `str_replace()` function to strip out `<script>` tags. However, `str_replace()` is case-sensitive. The developer failed to use a case-insensitive function (like `str_ireplace()`) or implement proper HTML entity encoding. By manipulating the capitalization of the injected tags (e.g., `<Script>`), an attacker can evade the exact-match filter while still providing a payload that the victim's browser will recognize and execute as valid HTML/JavaScript.
@@ -600,11 +602,12 @@ Payload Used: `<svg onload=alert("Hacked!")>` entered into the "name" input fiel
 Result: Successfully bypassed the server's regular expression (Regex) filter by utilizing an alternative HTML tag and event handler, resulting in arbitrary JavaScript execution within the browser.), resulting in arbitrary JavaScript execution in the DOM.
 
 Screenshot:
+<img width="1916" height="962" alt="XSS Reflected High" src="https://github.com/user-attachments/assets/0c0a5d86-228b-45ec-9dff-e1ae2386e6e5" />
 
 
 Explanation of why it worked: Because the developer only blacklisted the specific "script" string pattern, the application remains vulnerable to alternative XSS vectors. By injecting an `<svg>` tag with an `onload` event handler, an attacker can provide a payload that completely evades the Regex pattern while still forcing the victim's browser to execute the embedded JavaScript upon rendering the reflected HTML.
 
-Explanation of why the Medium level payload failed: The Medium payload bypassed the filter by using mixed-case letters (<Script>). The High level upgrades the defense to preg_replace() with a case-insensitive regular expression, wiping out any variation of the word "script".
+Explanation of why the Medium level payload failed: The Medium payload bypassed the filter by using mixed-case letters `(<Script>)`. The High level upgrades the defense to preg_replace() with a case-insensitive regular expression, wiping out any variation of the word "script".
 
 ## 12. XSS (Stored)
 
