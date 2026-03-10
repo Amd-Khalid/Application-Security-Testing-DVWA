@@ -1023,6 +1023,13 @@ Control Groups (cgroups) provide resource limitation, ensuring the containerized
 
 This architecture allows DVWA to run a deliberately vulnerable, highly dangerous application directly on our host hardware without any risk of the malware or exploits (like our Command Injection or File Upload web shells) breaking out and infecting our actual computer.
 
+## Part 6: Security Analysis Questions
+
+1. Why does SQL Injection succeed at Low security?
+SQL Injection succeeds at the Low security level because the application completely lacks input sanitization. It takes raw data typed by the user (like `' OR 1=1 #`) and dynamically concatenates it directly into the backend database query string. Because the database cannot distinguish between the developer's intended code and the user's input, it executes the injected payload as legitimate SQL commands.
+
+
+
 
 
 
