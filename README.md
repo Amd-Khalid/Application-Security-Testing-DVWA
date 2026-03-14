@@ -1026,7 +1026,38 @@ This architecture allows DVWA to run a deliberately vulnerable, highly dangerous
 ## Part 6: Security Analysis Questions
 
 1. Why does SQL Injection succeed at Low security?
+
 SQL Injection succeeds at the Low security level because the application completely lacks input sanitization. It takes raw data typed by the user (like `' OR 1=1 #`) and dynamically concatenates it directly into the backend database query string. Because the database cannot distinguish between the developer's intended code and the user's input, it executes the injected payload as legitimate SQL commands.
+
+2. What control prevents it at High?
+
+As demonstrated in the testing phase, the "High" level in DVWA does not actually prevent SQL Injection; it merely attempts to disrupt automated tools by moving the input vector to a separate session window and appending a `LIMIT 1` clause to the query.* However, the control that truly prevents SQL injection (as seen in DVWA's "Impossible" level and modern secure applications) is the use of Parameterized Queries.
+
+3. Does HTTPS prevent these attacks? Why or why not?
+
+No, HTTPS does not prevent any of these attacks. HTTPS (Hypertext Transfer Protocol Secure) only encrypts the data *in transit* between the user's web browser and the web server, protecting it from network eavesdropping (Man-in-the-Middle attacks).
+
+4. What risks exist if this application is deployed publicly?
+
+If DVWA were deployed to the public internet, the entire host server and its surrounding network would be compromised almost immediately by automated botnets. 
+* **Complete System Takeover:** The Command Injection and File Upload vulnerabilities allow attackers to drop web shells and achieve Remote Code Execution (RCE), giving them total control over the server.
+* **Massive Data Breach:** The SQL Injection vulnerabilities allow attackers to instantly dump the entire database, compromising all user credentials, personal information, and administrative hashes.
+* **Malware Distribution:** The Persistent (Stored) XSS vulnerability means attackers could inject malicious scripts into the application that would quietly infect the browser of every single legitimate user who visits the site.
+
+5. Map each vulnerability to its OWASP Top 10 category.
+
+* **Brute Force:** A07:2021 – Identification and Authentication Failures
+* **Command Injection:** A03:2021 – Injection
+* **CSRF (Cross-Site Request Forgery):** A01:2021 – Broken Access Control
+* **File Inclusion:** A01:2021 – Broken Access Control *(Path Traversal)*
+* **File Upload:** A04:2021 – Insecure Design *(Allowing executable file uploads)*
+* **Insecure CAPTCHA:** A04:2021 – Insecure Design *(Client-side trust/logic flaws)*
+* **SQL Injection:** A03:2021 – Injection
+* **SQL Injection (Blind):** A03:2021 – Injection
+* **Weak Session IDs:** A07:2021 – Identification and Authentication Failures
+* **XSS (DOM, Reflected, Stored):** A03:2021 – Injection *(Cross-Site Scripting was merged into the Injection category in the 2021 update)*
+* **CSP Bypass:** A05:2021 – Security Misconfiguration
+* **JavaScript Attacks:** A04:2021 – Insecure Design *(Exposing sensitive validation logic to the client)*
 
 
 
